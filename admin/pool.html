@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>号源池管理 - XX医院在线预约挂号系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .sidebar { background: #232a3b; border-right: none; top: 60px; }
+        .menu-item { color: #aaa; }
+        .menu-item:hover { background: #165DFF; color: #fff; }
+        .menu-item.active { background: #165DFF; color: #fff; border-right: none; }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="header" style="background: #232a3b; border-bottom: none; color: #fff;">
+        <div class="logo" style="color: #fff;">
+            <i style="font-style: normal;">🛠️</i> 系统管理后台
+        </div>
+        <div class="flex-center">
+            <span class="mr-20">管理员：Admin</span>
+            <button class="btn btn-danger btn-sm" onclick="logout()">退出登录</button>
+        </div>
+    </div>
+
+    <!-- 左侧侧边栏 -->
+    <div class="sidebar">
+        <div class="menu-item" onclick="location.href='index.html'"><i style="font-style: normal;">📊</i> 综合监控</div>
+        <div class="menu-item" onclick="location.href='basic_info.html'"><i style="font-style: normal;">🏥</i> 基础信息管理</div>
+        <div class="menu-item active" onclick="location.href='pool.html'"><i style="font-style: normal;">🔢</i> 号源池管理</div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main">
+        <div class="card mb-20">
+            <h4 class="mb-20">号源配置规则</h4>
+            <div class="flex-wrap">
+                <div class="form-item mr-20" style="width: 30%;">
+                    <label>放号时间</label>
+                    <div class="flex">
+                        <input type="time" value="08:00" class="mr-10">
+                        <button class="btn btn-default btn-sm">保存</button>
+                    </div>
+                </div>
+                <div class="form-item mr-20" style="width: 30%;">
+                    <label>线上号源比例</label>
+                    <div class="flex">
+                        <input type="number" value="70" class="mr-10" style="width: 80px;"> %
+                        <button class="btn btn-default btn-sm ml-10">保存</button>
+                    </div>
+                </div>
+                <div class="form-item" style="width: 30%;">
+                    <label>预约限制</label>
+                    <div class="flex">
+                        <span class="mr-10">每人每日限</span>
+                        <input type="number" value="2" class="mr-10" style="width: 60px;"> 次
+                        <button class="btn btn-default btn-sm ml-10">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="flex-between mb-20">
+                <h4>科室号源监控</h4>
+                <div class="flex">
+                    <input type="date" style="border: 1px solid #eee; padding: 8px; border-radius: 4px; margin-right: 10px;">
+                    <button class="btn btn-primary">查询</button>
+                </div>
+            </div>
+            
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>科室</th>
+                        <th>总号源</th>
+                        <th>已预约</th>
+                        <th>剩余</th>
+                        <th>使用率</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>心内科</td>
+                        <td>200</td>
+                        <td>190</td>
+                        <td>10</td>
+                        <td>
+                            <div style="width: 100px; height: 8px; background: #eee; border-radius: 4px; display: inline-block; margin-right: 5px;">
+                                <div style="width: 95%; height: 100%; background: #ff4d4f; border-radius: 4px;"></div>
+                            </div>
+                            95%
+                        </td>
+                        <td><span class="label label-red">紧张</span></td>
+                        <td>
+                            <button class="btn btn-primary btn-sm">追加号源</button>
+                            <button class="btn btn-danger btn-sm ml-5">锁号</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>儿科</td>
+                        <td>150</td>
+                        <td>120</td>
+                        <td>30</td>
+                        <td>
+                            <div style="width: 100px; height: 8px; background: #eee; border-radius: 4px; display: inline-block; margin-right: 5px;">
+                                <div style="width: 80%; height: 100%; background: #faad14; border-radius: 4px;"></div>
+                            </div>
+                            80%
+                        </td>
+                        <td><span class="label label-yellow">正常</span></td>
+                        <td>
+                            <button class="btn btn-primary btn-sm">追加号源</button>
+                            <button class="btn btn-danger btn-sm ml-5">锁号</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>口腔科</td>
+                        <td>80</td>
+                        <td>20</td>
+                        <td>60</td>
+                        <td>
+                            <div style="width: 100px; height: 8px; background: #eee; border-radius: 4px; display: inline-block; margin-right: 5px;">
+                                <div style="width: 25%; height: 100%; background: #52c41a; border-radius: 4px;"></div>
+                            </div>
+                            25%
+                        </td>
+                        <td><span class="label label-green">充裕</span></td>
+                        <td>
+                            <button class="btn btn-primary btn-sm">追加号源</button>
+                            <button class="btn btn-danger btn-sm ml-5">锁号</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+</body>
+</html>

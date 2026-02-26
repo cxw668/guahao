@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>患者预约管理 - XX医院在线预约挂号系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="header">
+        <div class="logo">
+            <i style="font-style: normal;">🏥</i> 医生工作站
+        </div>
+        <div class="flex-center">
+            <span class="mr-20">李四 (主任医师)</span>
+            <span class="mr-20" style="cursor: pointer;">🔔 消息(5)</span>
+            <button class="btn btn-default btn-sm" onclick="logout()">退出登录</button>
+        </div>
+    </div>
+
+    <!-- 左侧侧边栏 -->
+    <div class="sidebar">
+        <div class="menu-item" onclick="location.href='index.html'"><i style="font-style: normal;">📊</i> 工作台</div>
+        <div class="menu-item active" onclick="location.href='appointments.html'"><i style="font-style: normal;">📅</i> 患者预约</div>
+        <div class="menu-item" onclick="location.href='schedule.html'"><i style="font-style: normal;">🕒</i> 排班管理</div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main">
+        <div class="card mb-20">
+            <!-- 筛选 -->
+            <div class="flex-between mb-20">
+                <div class="flex">
+                    <input type="text" placeholder="搜索患者姓名/预约号" style="border: 1px solid #eee; padding: 8px; border-radius: 4px; margin-right: 10px; width: 250px;">
+                    <button class="btn btn-default">查询</button>
+                </div>
+                <div class="flex">
+                    <button class="btn btn-primary mr-10">今日预约</button>
+                    <button class="btn btn-default mr-10">明日预约</button>
+                    <input type="date" style="border: 1px solid #eee; padding: 8px; border-radius: 4px;">
+                </div>
+            </div>
+
+            <!-- 列表 -->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>预约号</th>
+                        <th>姓名</th>
+                        <th>性别</th>
+                        <th>年龄</th>
+                        <th>就诊时间</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>A202510200001</td>
+                        <td>张三</td>
+                        <td>男</td>
+                        <td>35</td>
+                        <td>2025-10-20 08:00-08:30</td>
+                        <td><span class="label label-blue">待就诊</span></td>
+                        <td>
+                            <a href="consult.html?id=A202510200001" class="btn btn-primary btn-sm">接诊</a>
+                            <button class="btn btn-default btn-sm ml-5">过号</button>
+                            <button class="btn btn-danger btn-sm ml-5" onclick="markNoShow(this)">标记失约</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>A202510200002</td>
+                        <td>李小红</td>
+                        <td>女</td>
+                        <td>28</td>
+                        <td>2025-10-20 08:30-09:00</td>
+                        <td><span class="label label-blue">待就诊</span></td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" disabled>接诊</button>
+                            <button class="btn btn-default btn-sm ml-5">过号</button>
+                            <button class="btn btn-danger btn-sm ml-5">标记失约</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>A202510200003</td>
+                        <td>王五</td>
+                        <td>男</td>
+                        <td>45</td>
+                        <td>2025-10-20 09:00-09:30</td>
+                        <td><span class="label label-green">已完成</span></td>
+                        <td>
+                            <a href="records.html" class="btn btn-default btn-sm">查看病历</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        function markNoShow(btn) {
+            if(confirm('确定要标记该患者为失约吗？\n这将计入患者违规记录。')) {
+                const row = btn.closest('tr');
+                const status = row.querySelector('.label');
+                status.className = 'label label-red';
+                status.innerText = '失约';
+                btn.parentElement.innerHTML = '<span style="color: #ff4d4f;">已标记失约</span>';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统管理后台 - XX医院在线预约挂号系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .chart-placeholder {
+            height: 300px;
+            background: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            border: 1px dashed #ddd;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="header" style="background: #232a3b; border-bottom: none; color: #fff;">
+        <div class="logo" style="color: #fff;">
+            <i style="font-style: normal;">🛠️</i> 系统管理后台
+        </div>
+        <div class="flex-center">
+            <span class="mr-20">管理员：Admin</span>
+            <button class="btn btn-danger btn-sm" onclick="logout()">退出登录</button>
+        </div>
+    </div>
+
+    <!-- 左侧侧边栏 -->
+    <div class="sidebar" style="background: #232a3b; color: #aaa; border-right: none; top: 60px;">
+        <div class="menu-item active" style="color: #fff; background: #165DFF;" onclick="location.href='index.html'"><i style="font-style: normal;">📊</i> 综合监控</div>
+        <div class="menu-item" style="color: #aaa;" onclick="location.href='basic_info.html'"><i style="font-style: normal;">🏥</i> 基础信息管理</div>
+        <div class="menu-item" style="color: #aaa;" onclick="location.href='pool.html'"><i style="font-style: normal;">🔢</i> 号源池管理</div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main" style="background: #f0f2f5;">
+        <!-- 数据卡片 -->
+        <div class="flex mb-20">
+            <div class="stat-card">
+                <h3>1,203</h3>
+                <p>今日预约总数</p>
+            </div>
+            <div class="stat-card">
+                <h3>89%</h3>
+                <p>号源使用率</p>
+            </div>
+            <div class="stat-card">
+                <h3>5</h3>
+                <p>恶意刷号预警</p>
+            </div>
+            <div class="stat-card">
+                <h3>120</h3>
+                <p>新增用户数</p>
+            </div>
+        </div>
+
+        <!-- 图表区 -->
+        <div class="flex mb-20">
+            <div class="card" style="flex: 2; margin-right: 20px;">
+                <h4 class="mb-20">近7日挂号量趋势</h4>
+                <div class="chart-placeholder">
+                    [ 折线图：展示近7日挂号量波动 ]
+                </div>
+            </div>
+            <div class="card" style="flex: 1;">
+                <h4 class="mb-20">科室热度排行</h4>
+                <table class="table">
+                    <tr>
+                        <th>排名</th>
+                        <th>科室</th>
+                        <th>挂号量</th>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-red">1</span></td>
+                        <td>心内科</td>
+                        <td>320</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-yellow">2</span></td>
+                        <td>儿科</td>
+                        <td>280</td>
+                    </tr>
+                    <tr>
+                        <td><span class="label label-blue">3</span></td>
+                        <td>骨科</td>
+                        <td>210</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- 预警信息 -->
+        <div class="card">
+            <h4 class="mb-20" style="color: #ff4d4f;">⚠️ 异常监控预警</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>时间</th>
+                        <th>类型</th>
+                        <th>描述</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2025-10-20 09:15</td>
+                        <td><span class="label label-red">恶意刷号</span></td>
+                        <td>IP 192.168.1.100 在1分钟内请求接口 500 次</td>
+                        <td>未处理</td>
+                        <td><button class="btn btn-danger btn-sm">封禁IP</button></td>
+                    </tr>
+                    <tr>
+                        <td>2025-10-20 08:30</td>
+                        <td><span class="label label-yellow">号源紧张</span></td>
+                        <td>心内科上午号源剩余不足 5%</td>
+                        <td>已通知</td>
+                        <td><button class="btn btn-primary btn-sm" onclick="location.href='pool.html'">调整号源</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        // Override active menu logic for admin specifically if needed, 
+        // but default script.js should work if paths match.
+        // Custom styles for sidebar need specific handling if script.js overrides them strictly,
+        // but script.js only adds 'active' class. We styled 'active' in HTML style block for this page? 
+        // Actually script.js adds 'active' class which has styles in style.css.
+        // Admin sidebar has inline styles that might conflict or be overridden. 
+        // Let's just let it be for prototype.
+    </script>
+</body>
+</html>

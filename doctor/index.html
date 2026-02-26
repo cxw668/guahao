@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医生工作台 - XX医院在线预约挂号系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="header">
+        <div class="logo">
+            <i style="font-style: normal;">🏥</i> 医生工作站
+        </div>
+        <div class="flex-center">
+            <span class="mr-20">李四 (主任医师)</span>
+            <span class="mr-20" style="cursor: pointer;">🔔 消息(5)</span>
+            <button class="btn btn-default btn-sm" onclick="logout()">退出登录</button>
+        </div>
+    </div>
+
+    <!-- 左侧侧边栏 -->
+    <div class="sidebar">
+        <div class="menu-item active" onclick="location.href='index.html'"><i style="font-style: normal;">📊</i> 工作台</div>
+        <div class="menu-item" onclick="location.href='appointments.html'"><i style="font-style: normal;">📅</i> 患者预约</div>
+        <div class="menu-item" onclick="location.href='schedule.html'"><i style="font-style: normal;">🕒</i> 排班管理</div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main">
+        <!-- 数据看板 -->
+        <div class="flex mb-20">
+            <div class="stat-card">
+                <h3>20</h3>
+                <p>今日挂号总数</p>
+            </div>
+            <div class="stat-card" style="border-color: #1890ff; background: #e6f7ff;">
+                <h3 style="color: #1890ff;">8</h3>
+                <p>当前待接诊</p>
+            </div>
+            <div class="stat-card">
+                <h3>12</h3>
+                <p>已完成接诊</p>
+            </div>
+            <div class="stat-card">
+                <h3>0</h3>
+                <p>今日失约</p>
+            </div>
+        </div>
+
+        <div class="flex mb-20">
+            <!-- 候诊队列 -->
+            <div class="card" style="flex: 2; margin-right: 20px;">
+                <div class="flex-between mb-10">
+                    <h4>当前候诊队列</h4>
+                    <button class="btn btn-primary btn-sm" onclick="callNext()">叫号下一位</button>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>姓名</th>
+                            <th>挂号类型</th>
+                            <th>等待时长</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background: #e6f7ff;">
+                            <td>1</td>
+                            <td>张三</td>
+                            <td>普通号</td>
+                            <td>15分钟</td>
+                            <td>
+                                <a href="consult.html?patient=张三" class="btn btn-primary btn-sm">接诊</a>
+                                <button class="btn btn-default btn-sm ml-5">过号</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>李四</td>
+                            <td>专家号</td>
+                            <td>10分钟</td>
+                            <td>
+                                <button class="btn btn-default btn-sm" disabled>等待中</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>王五</td>
+                            <td>普通号</td>
+                            <td>5分钟</td>
+                            <td>
+                                <button class="btn btn-default btn-sm" disabled>等待中</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 今日排班 -->
+            <div class="card" style="flex: 1;">
+                <h4>今日排班信息</h4>
+                <div class="mt-20">
+                    <p class="mb-10"><strong>日期：</strong> 2025-10-20 (周一)</p>
+                    <p class="mb-10"><strong>时段：</strong> 上午 08:00 - 12:00</p>
+                    <p class="mb-10"><strong>诊室：</strong> 心内科门诊 3诊室</p>
+                    <p class="mb-10"><strong>号源使用：</strong> <span style="color: #52c41a;">18/20</span></p>
+                    <hr class="mb-20">
+                    <p class="mb-10"><strong>下午时段：</strong> 14:00 - 17:00</p>
+                    <p class="mb-10"><strong>号源使用：</strong> 10/15</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        function callNext() {
+            showToast('正在呼叫：1号 张三，请到3诊室就诊', 'info');
+            // Play sound logic here
+        }
+    </script>
+</body>
+</html>

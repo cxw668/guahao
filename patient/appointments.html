@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的预约 - XX医院在线预约挂号系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="header">
+        <div class="logo">
+            <i style="font-style: normal;">🏥</i> XX医院在线预约挂号系统
+        </div>
+        <div class="flex-center">
+            <span class="mr-20">您好，张三</span>
+            <span class="mr-20" style="cursor: pointer;">🔔 消息(2)</span>
+            <button class="btn btn-default btn-sm" onclick="logout()">退出登录</button>
+        </div>
+    </div>
+
+    <!-- 左侧侧边栏 -->
+    <div class="sidebar">
+        <div class="menu-item" onclick="location.href='index.html'"><i style="font-style: normal;">🏠</i> 挂号大厅</div>
+        <div class="menu-item active" onclick="location.href='appointments.html'"><i style="font-style: normal;">📅</i> 我的预约</div>
+        <div class="menu-item" onclick="location.href='records.html'"><i style="font-style: normal;">📝</i> 就诊记录</div>
+        <div class="menu-item" onclick="location.href='profile.html'"><i style="font-style: normal;">👤</i> 个人档案</div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main">
+        <div class="card mb-20">
+            <!-- 筛选 -->
+            <div class="flex-between mb-20">
+                <div class="flex">
+                    <button class="btn btn-primary mr-10">全部</button>
+                    <button class="btn btn-default mr-10">待就诊</button>
+                    <button class="btn btn-default mr-10">已完成</button>
+                    <button class="btn btn-default mr-10">已取消</button>
+                    <button class="btn btn-default mr-10">失约</button>
+                </div>
+                <div class="flex">
+                    <input type="date" style="border: 1px solid #eee; padding: 8px; border-radius: 4px; margin-right: 10px;">
+                    <button class="btn btn-default">搜索</button>
+                </div>
+            </div>
+
+            <!-- 列表 -->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>预约单号</th>
+                        <th>就诊人</th>
+                        <th>医生/科室</th>
+                        <th>就诊时间</th>
+                        <th>费用</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 待就诊 -->
+                    <tr>
+                        <td>A202510200001</td>
+                        <td>张三</td>
+                        <td>李四 (心内科)</td>
+                        <td>2025-10-20 08:00-08:30</td>
+                        <td>¥50.00</td>
+                        <td><span class="label label-blue">待就诊</span></td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="cancelAppointment(this)">取消预约</button>
+                        </td>
+                    </tr>
+                    <!-- 已完成 -->
+                    <tr>
+                        <td>A2025101500023</td>
+                        <td>张三</td>
+                        <td>王五 (骨科)</td>
+                        <td>2025-10-15 10:00-10:30</td>
+                        <td>¥30.00</td>
+                        <td><span class="label label-green">已完成</span></td>
+                        <td>
+                            <a href="records.html" class="btn btn-default btn-sm">查看病历</a>
+                        </td>
+                    </tr>
+                    <!-- 失约 -->
+                    <tr>
+                        <td>A2025091000005</td>
+                        <td>张小明</td>
+                        <td>赵六 (儿科)</td>
+                        <td>2025-09-10 14:00-14:30</td>
+                        <td>¥30.00</td>
+                        <td><span class="label label-red">失约</span></td>
+                        <td>
+                            <button class="btn btn-default btn-sm" onclick="showToast('因未按时取号，记一次违规', 'error')">查看详情</button>
+                        </td>
+                    </tr>
+                    <!-- 已取消 -->
+                    <tr>
+                        <td>A2025090100012</td>
+                        <td>张三</td>
+                        <td>李四 (心内科)</td>
+                        <td>2025-09-01 09:00-09:30</td>
+                        <td>¥50.00</td>
+                        <td><span class="label label-gray">已取消</span></td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- 分页 -->
+            <div class="pagination">
+                <button class="btn btn-default" disabled>上一页</button>
+                <button class="btn btn-primary">1</button>
+                <button class="btn btn-default">2</button>
+                <button class="btn btn-default">3</button>
+                <button class="btn btn-default">下一页</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        function cancelAppointment(btn) {
+            if(confirm('确定要取消该预约吗？\n取消后号源将释放给其他患者。')) {
+                // Remove row or change status
+                const row = btn.closest('tr');
+                const statusSpan = row.querySelector('.label');
+                statusSpan.className = 'label label-gray';
+                statusSpan.innerText = '已取消';
+                btn.parentElement.innerHTML = '-';
+                showToast('预约已取消', 'info');
+            }
+        }
+    </script>
+</body>
+</html>

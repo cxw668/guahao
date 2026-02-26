@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>患者首页 - XX医院在线预约挂号系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="header">
+        <div class="logo">
+            <i style="font-style: normal;">🏥</i> XX医院在线预约挂号系统
+        </div>
+        <div class="flex-center">
+            <span class="mr-20">您好，张三</span>
+            <span class="mr-20" style="cursor: pointer;">🔔 消息(2)</span>
+            <button class="btn btn-default btn-sm" onclick="logout()">退出登录</button>
+        </div>
+    </div>
+
+    <!-- 左侧侧边栏 -->
+    <div class="sidebar">
+        <div class="menu-item active" onclick="location.href='index.html'"><i style="font-style: normal;">🏠</i> 挂号大厅</div>
+        <div class="menu-item" onclick="location.href='appointments.html'"><i style="font-style: normal;">📅</i> 我的预约</div>
+        <div class="menu-item" onclick="location.href='records.html'"><i style="font-style: normal;">📝</i> 就诊记录</div>
+        <div class="menu-item" onclick="location.href='profile.html'"><i style="font-style: normal;">👤</i> 个人档案</div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main">
+        <div class="card mb-20">
+            <!-- 搜索区 -->
+            <div class="flex-between mb-20">
+                <div class="flex">
+                    <input type="text" placeholder="搜索科室/医生姓名/职称" style="width: 300px; margin-right: 10px;">
+                    <button class="btn btn-primary">搜索</button>
+                </div>
+                <input type="date" style="border: 1px solid #eee; padding: 8px; border-radius: 4px;">
+            </div>
+
+            <!-- 快捷入口 -->
+            <div class="flex mb-20">
+                <div class="stat-card" onclick="location.href='index.html'" style="cursor: pointer; background: #e6f7ff; border-color: #91d5ff;">
+                    <h3 style="color: #1890ff;">快速挂号</h3>
+                    <p>无需排队，在线预约</p>
+                </div>
+                <div class="stat-card" onclick="location.href='appointments.html'" style="cursor: pointer;">
+                    <h3>我的预约</h3>
+                    <p>查看即将到来的就诊</p>
+                </div>
+                <div class="stat-card" onclick="location.href='records.html'" style="cursor: pointer;">
+                    <h3>就诊记录</h3>
+                    <p>历史诊断与处方</p>
+                </div>
+                <div class="stat-card" onclick="location.href='profile.html'" style="cursor: pointer;">
+                    <h3>个人档案</h3>
+                    <p>管理就诊人信息</p>
+                </div>
+            </div>
+
+            <!-- 科室导航 -->
+            <h4 class="mb-10">热门科室</h4>
+            <div class="flex-wrap mb-20">
+                <div class="border pd-10 text-center mr-10 mb-10" style="width: 120px; cursor: pointer; background: #fff;">内科<br><small style="color: #999;">剩余号源: 20</small></div>
+                <div class="border pd-10 text-center mr-10 mb-10" style="width: 120px; cursor: pointer; background: #fff;">外科<br><small style="color: #999;">剩余号源: 15</small></div>
+                <div class="border pd-10 text-center mr-10 mb-10" style="width: 120px; cursor: pointer; background: #fff;">妇科<br><small style="color: #999;">剩余号源: 12</small></div>
+                <div class="border pd-10 text-center mr-10 mb-10" style="width: 120px; cursor: pointer; background: #fff;">儿科<br><small style="color: #999;">剩余号源: 18</small></div>
+                <div class="border pd-10 text-center mr-10 mb-10" style="width: 120px; cursor: pointer; background: #fff;">眼科<br><small style="color: #999;">剩余号源: 8</small></div>
+                <div class="border pd-10 text-center mr-10 mb-10" style="width: 120px; cursor: pointer; background: #fff;">口腔科<br><small style="color: #999;">剩余号源: 10</small></div>
+                <div class="border pd-10 text-center mr-10 mb-10" style="width: 120px; cursor: pointer; background: #fff;">皮肤科<br><small style="color: #999;">剩余号源: 5</small></div>
+                <div class="border pd-10 text-center mr-10 mb-10" style="width: 120px; cursor: pointer; background: #fff;">中医科<br><small style="color: #999;">剩余号源: 25</small></div>
+            </div>
+
+            <!-- 推荐医生 -->
+            <h4 class="mb-10">推荐专家</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>医生姓名</th>
+                        <th>职称</th>
+                        <th>所属科室</th>
+                        <th>擅长领域</th>
+                        <th>今日剩余号源</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="flex-center" style="justify-content: flex-start;">
+                                <div style="width: 32px; height: 32px; background: #eee; border-radius: 50%; margin-right: 10px;"></div>
+                                李四
+                            </div>
+                        </td>
+                        <td>主任医师</td>
+                        <td>心内科</td>
+                        <td>冠心病、高血压</td>
+                        <td><span class="label label-green">12</span></td>
+                        <td><a href="doctor_detail.html" class="btn btn-primary btn-sm">预约</a></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="flex-center" style="justify-content: flex-start;">
+                                <div style="width: 32px; height: 32px; background: #eee; border-radius: 50%; margin-right: 10px;"></div>
+                                王五
+                            </div>
+                        </td>
+                        <td>副主任医师</td>
+                        <td>骨科</td>
+                        <td>骨折、关节损伤</td>
+                        <td><span class="label label-green">8</span></td>
+                        <td><a href="doctor_detail.html" class="btn btn-primary btn-sm">预约</a></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="flex-center" style="justify-content: flex-start;">
+                                <div style="width: 32px; height: 32px; background: #eee; border-radius: 50%; margin-right: 10px;"></div>
+                                赵六
+                            </div>
+                        </td>
+                        <td>主治医师</td>
+                        <td>儿科</td>
+                        <td>儿童感冒、积食</td>
+                        <td><span class="label label-gray">0</span></td>
+                        <td><button class="btn btn-default btn-sm" disabled>无号</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+</body>
+</html>

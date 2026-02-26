@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>就诊记录 - XX医院在线预约挂号系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="header">
+        <div class="logo">
+            <i style="font-style: normal;">🏥</i> XX医院在线预约挂号系统
+        </div>
+        <div class="flex-center">
+            <span class="mr-20">您好，张三</span>
+            <span class="mr-20" style="cursor: pointer;">🔔 消息(2)</span>
+            <button class="btn btn-default btn-sm" onclick="logout()">退出登录</button>
+        </div>
+    </div>
+
+    <!-- 左侧侧边栏 -->
+    <div class="sidebar">
+        <div class="menu-item" onclick="location.href='index.html'"><i style="font-style: normal;">🏠</i> 挂号大厅</div>
+        <div class="menu-item" onclick="location.href='appointments.html'"><i style="font-style: normal;">📅</i> 我的预约</div>
+        <div class="menu-item active" onclick="location.href='records.html'"><i style="font-style: normal;">📝</i> 就诊记录</div>
+        <div class="menu-item" onclick="location.href='profile.html'"><i style="font-style: normal;">👤</i> 个人档案</div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main">
+        <div class="card mb-20">
+            <!-- 搜索 -->
+            <div class="flex-between mb-20">
+                <div class="flex">
+                    <input type="text" placeholder="搜索医生/科室" style="border: 1px solid #eee; padding: 8px; border-radius: 4px; margin-right: 10px; width: 250px;">
+                    <button class="btn btn-default">查询</button>
+                </div>
+                <button class="btn btn-default">导出PDF</button>
+            </div>
+
+            <!-- 列表 -->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>就诊单号</th>
+                        <th>就诊人</th>
+                        <th>医生/科室</th>
+                        <th>就诊时间</th>
+                        <th>诊断结果</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>J2025101500089</td>
+                        <td>张三</td>
+                        <td>王五 / 骨科</td>
+                        <td>2025-10-15 10:00-10:30</td>
+                        <td>软组织损伤</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="showDetail(this)">查看详情</button>
+                            <button class="btn btn-default btn-sm ml-10">查看处方</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>J2025092000045</td>
+                        <td>张三</td>
+                        <td>李四 / 心内科</td>
+                        <td>2025-09-20 09:00-09:30</td>
+                        <td>高血压1级</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="showDetail(this)">查看详情</button>
+                            <button class="btn btn-default btn-sm ml-10">查看处方</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>J2025081000012</td>
+                        <td>张小明</td>
+                        <td>赵六 / 儿科</td>
+                        <td>2025-08-10 14:00-14:30</td>
+                        <td>上呼吸道感染</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="showDetail(this)">查看详情</button>
+                            <button class="btn btn-default btn-sm ml-10">查看处方</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 详情弹窗 (Mock) -->
+    <div id="detailModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="card" style="width: 600px; padding: 30px;">
+            <div class="flex-between mb-20">
+                <h3>就诊详情</h3>
+                <span style="cursor: pointer; font-size: 20px;" onclick="closeModal()">×</span>
+            </div>
+            <div class="mb-10"><strong>就诊人：</strong> 张三</div>
+            <div class="mb-10"><strong>科室：</strong> 骨科</div>
+            <div class="mb-10"><strong>医生：</strong> 王五 (副主任医师)</div>
+            <div class="mb-10"><strong>就诊时间：</strong> 2025-10-15 10:00</div>
+            <div class="mb-10"><strong>主诉：</strong> 右腿疼痛3天</div>
+            <div class="mb-10"><strong>现病史：</strong> 运动后出现右小腿肌肉酸痛，无红肿。</div>
+            <div class="mb-10"><strong>体格检查：</strong> 右小腿腓肠肌压痛(+)，活动受限。</div>
+            <div class="mb-10"><strong>初步诊断：</strong> 软组织损伤</div>
+            <div class="mb-20"><strong>处理意见：</strong> 建议休息，局部热敷，开具活血止痛膏。</div>
+            <div class="text-right">
+                <button class="btn btn-primary" onclick="closeModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        function showDetail(btn) {
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

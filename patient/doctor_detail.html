@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医生详情 - XX医院在线预约挂号系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="header">
+        <div class="logo">
+            <i style="font-style: normal;">🏥</i> XX医院在线预约挂号系统
+        </div>
+        <div class="flex-center">
+            <span class="mr-20">您好，张三</span>
+            <span class="mr-20" style="cursor: pointer;">🔔 消息(2)</span>
+            <button class="btn btn-default btn-sm" onclick="logout()">退出登录</button>
+        </div>
+    </div>
+
+    <!-- 左侧侧边栏 -->
+    <div class="sidebar">
+        <div class="menu-item" onclick="location.href='index.html'"><i style="font-style: normal;">🏠</i> 挂号大厅</div>
+        <div class="menu-item" onclick="location.href='appointments.html'"><i style="font-style: normal;">📅</i> 我的预约</div>
+        <div class="menu-item" onclick="location.href='records.html'"><i style="font-style: normal;">📝</i> 就诊记录</div>
+        <div class="menu-item" onclick="location.href='profile.html'"><i style="font-style: normal;">👤</i> 个人档案</div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main">
+        <div class="card mb-20">
+            <button class="btn btn-default mb-20" onclick="history.back()">← 返回上一页</button>
+            
+            <!-- 医生信息 -->
+            <div class="flex mb-20">
+                <div style="width: 120px; height: 120px; background: #eee; border-radius: 8px; margin-right: 20px; display: flex; align-items: center; justify-content: center; font-size: 40px;">👨‍⚕️</div>
+                <div>
+                    <h2 class="mb-10">李四 <span class="label label-blue ml-10" style="font-size: 14px; vertical-align: middle;">主任医师</span></h2>
+                    <p class="mb-5" style="color: #666;">所属科室：心内科</p>
+                    <p class="mb-5" style="color: #666;">擅长领域：冠心病、高血压、心律失常、心力衰竭等心血管疾病的诊治。</p>
+                    <p class="mb-10" style="color: #666;">出诊时间：周一至周五 上午8:00-12:00，下午14:00-17:00</p>
+                    <div class="flex">
+                        <span class="label label-yellow mr-10">评分 4.9</span>
+                        <span class="label label-green">接诊量 1200+</span>
+                    </div>
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 20px;">
+
+            <!-- 排班表 -->
+            <h3 class="mb-20">选择就诊时间</h3>
+            
+            <div class="flex-wrap mb-20">
+                <button class="btn btn-primary mr-10 mb-10">10-20 (今天)</button>
+                <button class="btn btn-default mr-10 mb-10">10-21 (明天)</button>
+                <button class="btn btn-default mr-10 mb-10">10-22 (周三)</button>
+                <button class="btn btn-default mr-10 mb-10">10-23 (周四)</button>
+                <button class="btn btn-default mr-10 mb-10">10-24 (周五)</button>
+                <button class="btn btn-default mr-10 mb-10">10-25 (周六)</button>
+                <button class="btn btn-default mr-10 mb-10">10-26 (周日)</button>
+            </div>
+
+            <div class="border pd-20 mb-20" style="background: #fafafa;">
+                <h4 class="mb-10">2025-10-20 上午时段</h4>
+                <div class="flex-wrap">
+                    <div class="border pd-10 mr-10 mb-10 text-center" style="width: 140px; cursor: pointer; background: #fff; border-color: #165DFF; color: #165DFF;" onclick="selectTime(this)">
+                        08:00-08:30<br>
+                        <span style="font-size: 12px;">剩余 3</span>
+                    </div>
+                    <div class="border pd-10 mr-10 mb-10 text-center" style="width: 140px; cursor: pointer; background: #fff;" onclick="selectTime(this)">
+                        08:30-09:00<br>
+                        <span style="font-size: 12px; color: #52c41a;">剩余 5</span>
+                    </div>
+                    <div class="border pd-10 mr-10 mb-10 text-center" style="width: 140px; cursor: pointer; background: #fff;" onclick="selectTime(this)">
+                        09:00-09:30<br>
+                        <span style="font-size: 12px; color: #52c41a;">剩余 8</span>
+                    </div>
+                    <div class="border pd-10 mr-10 mb-10 text-center" style="width: 140px; cursor: not-allowed; background: #f5f5f5; color: #999;">
+                        09:30-10:00<br>
+                        <span style="font-size: 12px;">已约满</span>
+                    </div>
+                </div>
+
+                <h4 class="mb-10 mt-20">2025-10-20 下午时段</h4>
+                <div class="flex-wrap">
+                    <div class="border pd-10 mr-10 mb-10 text-center" style="width: 140px; cursor: pointer; background: #fff;" onclick="selectTime(this)">
+                        14:00-14:30<br>
+                        <span style="font-size: 12px; color: #52c41a;">剩余 10</span>
+                    </div>
+                    <div class="border pd-10 mr-10 mb-10 text-center" style="width: 140px; cursor: pointer; background: #fff;" onclick="selectTime(this)">
+                        14:30-15:00<br>
+                        <span style="font-size: 12px; color: #52c41a;">剩余 12</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 预约确认 -->
+            <div class="card border" style="background: #fff;">
+                <h4 class="mb-20">确认预约信息</h4>
+                <div class="form-item">
+                    <label>就诊人</label>
+                    <div class="flex-wrap">
+                        <label class="mr-20" style="cursor: pointer; display: flex; align-items: center;">
+                            <input type="radio" name="patient" checked class="mr-10"> 
+                            张三 (本人) - 110101199001011234
+                        </label>
+                        <label class="mr-20" style="cursor: pointer; display: flex; align-items: center;">
+                            <input type="radio" name="patient" class="mr-10"> 
+                            李小四 (子女) - 110101201501015678
+                        </label>
+                        <a href="profile.html" style="color: #165DFF; font-size: 14px;">+ 添加就诊人</a>
+                    </div>
+                </div>
+                <div class="flex-between" style="border-top: 1px solid #eee; padding-top: 20px; margin-top: 20px;">
+                    <div>
+                        <span style="font-size: 14px; color: #666;">挂号费：</span>
+                        <span style="font-size: 24px; color: #ff4d4f; font-weight: bold;">¥ 50.00</span>
+                    </div>
+                    <button class="btn btn-primary" onclick="confirmBooking()">确认预约</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        function selectTime(el) {
+            // Remove active class from all
+            document.querySelectorAll('.border.pd-10').forEach(item => {
+                if(!item.style.cursor.includes('not-allowed')) {
+                    item.style.borderColor = '#eee';
+                    item.style.color = '#333';
+                }
+            });
+            // Add active to current
+            el.style.borderColor = '#165DFF';
+            el.style.color = '#165DFF';
+        }
+
+        function confirmBooking() {
+            if(confirm('确定要预约 2025-10-20 08:00-08:30 的号源吗？\n需支付挂号费 ¥50.00')) {
+                showToast('预约成功！', 'success');
+                setTimeout(() => {
+                    location.href = 'appointments.html';
+                }, 1500);
+            }
+        }
+    </script>
+</body>
+</html>

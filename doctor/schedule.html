@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>排班管理 - XX医院在线预约挂号系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="header">
+        <div class="logo">
+            <i style="font-style: normal;">🏥</i> 医生工作站
+        </div>
+        <div class="flex-center">
+            <span class="mr-20">李四 (主任医师)</span>
+            <span class="mr-20" style="cursor: pointer;">🔔 消息(5)</span>
+            <button class="btn btn-default btn-sm" onclick="logout()">退出登录</button>
+        </div>
+    </div>
+
+    <!-- 左侧侧边栏 -->
+    <div class="sidebar">
+        <div class="menu-item" onclick="location.href='index.html'"><i style="font-style: normal;">📊</i> 工作台</div>
+        <div class="menu-item" onclick="location.href='appointments.html'"><i style="font-style: normal;">📅</i> 患者预约</div>
+        <div class="menu-item active" onclick="location.href='schedule.html'"><i style="font-style: normal;">🕒</i> 排班管理</div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main">
+        <div class="card mb-20">
+            <!-- 工具栏 -->
+            <div class="flex-between mb-20">
+                <div class="flex">
+                    <button class="btn btn-primary mr-10">月视图</button>
+                    <button class="btn btn-default mr-10">周视图</button>
+                    <input type="month" style="border: 1px solid #eee; padding: 8px; border-radius: 4px;">
+                </div>
+                <button class="btn btn-primary">申请排班</button>
+            </div>
+
+            <!-- 日历 (Mock) -->
+            <div class="border pd-20">
+                <div class="text-center mb-20">
+                    <button class="btn btn-default mr-20">← 上一月</button>
+                    <span style="font-size: 18px; font-weight: bold;">2025年10月</span>
+                    <button class="btn btn-default ml-20">下一月 →</button>
+                </div>
+                <table class="table" style="border-collapse: separate; border-spacing: 5px;">
+                    <thead>
+                        <tr>
+                            <th class="text-center">周日</th>
+                            <th class="text-center">周一</th>
+                            <th class="text-center">周二</th>
+                            <th class="text-center">周三</th>
+                            <th class="text-center">周四</th>
+                            <th class="text-center">周五</th>
+                            <th class="text-center">周六</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">29</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee; background: #e6f0ff;">
+                                <strong>30</strong>
+                                <div class="mt-10 label label-blue d-block text-center">上午 20/20</div>
+                                <div class="mt-5 label label-blue d-block text-center">下午 15/15</div>
+                            </td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">1</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">2</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">3</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">4</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">5</td>
+                        </tr>
+                        <tr>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">6</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee; background: #e6f0ff;">
+                                <strong>7</strong>
+                                <div class="mt-10 label label-blue d-block text-center">上午 20/20</div>
+                            </td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">8</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">9</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">10</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">11</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">12</td>
+                        </tr>
+                        <tr>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">13</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee; background: #e6f0ff;">
+                                <strong>14</strong>
+                                <div class="mt-10 label label-blue d-block text-center">上午 20/20</div>
+                                <div class="mt-5 label label-blue d-block text-center">下午 15/15</div>
+                            </td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">15</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">16</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">17</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">18</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">19</td>
+                        </tr>
+                        <tr>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">20</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee; background: #e6f0ff; border-color: #165DFF;">
+                                <strong>21 (今日)</strong>
+                                <div class="mt-10 label label-blue d-block text-center">上午 20/20</div>
+                                <div class="mt-5 label label-blue d-block text-center">下午 15/15</div>
+                            </td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">22</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">23</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">24</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">25</td>
+                            <td style="height: 100px; vertical-align: top; border: 1px solid #eee;">26</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+</body>
+</html>

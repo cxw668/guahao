@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>接诊工作台 - XX医院在线预约挂号系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .consult-layout {
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+        .patient-info {
+            width: 300px;
+            background: #fff;
+            border-right: 1px solid #eee;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .consult-form {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="header">
+        <div class="logo">
+            <i style="font-style: normal;">🏥</i> 医生工作站
+        </div>
+        <div class="flex-center">
+            <span class="mr-20">正在接诊：张三 (男/35岁)</span>
+            <button class="btn btn-default btn-sm" onclick="location.href='index.html'">退出接诊</button>
+        </div>
+    </div>
+
+    <div class="consult-layout" style="margin-top: 60px;">
+        <!-- 左侧患者信息 -->
+        <div class="patient-info">
+            <div class="text-center mb-20">
+                <div style="width: 80px; height: 80px; background: #eee; border-radius: 50%; margin: 0 auto 10px;"></div>
+                <h3>张三</h3>
+                <p>男 | 35岁 | 138****1234</p>
+            </div>
+            <div class="mb-20">
+                <h4 class="mb-10">既往病史</h4>
+                <p class="mb-5" style="font-size: 13px; color: #666;">高血压 (2年)</p>
+                <p class="mb-5" style="font-size: 13px; color: #666;">无糖尿病史</p>
+            </div>
+            <div class="mb-20">
+                <h4 class="mb-10">过敏史</h4>
+                <p class="mb-5" style="font-size: 13px; color: #ff4d4f;">青霉素过敏</p>
+            </div>
+            <div class="mb-20">
+                <h4 class="mb-10">历史就诊</h4>
+                <div class="mb-10 border pd-10" style="font-size: 13px;">
+                    <p><strong>2025-09-20</strong> (心内科)</p>
+                    <p>诊断：高血压1级</p>
+                </div>
+                <div class="mb-10 border pd-10" style="font-size: 13px;">
+                    <p><strong>2024-12-15</strong> (呼吸科)</p>
+                    <p>诊断：急性支气管炎</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧病历表单 -->
+        <div class="consult-form">
+            <h3 class="mb-20">本次就诊记录</h3>
+            <div class="form-item">
+                <label>主诉 <span style="color: red;">*</span></label>
+                <textarea style="height: 60px;" placeholder="患者主要症状及持续时间"></textarea>
+            </div>
+            <div class="form-item">
+                <label>现病史</label>
+                <textarea style="height: 80px;" placeholder="发病情况、演变过程及伴随症状"></textarea>
+            </div>
+            <div class="form-item">
+                <label>体格检查</label>
+                <textarea style="height: 80px;" placeholder="查体结果"></textarea>
+            </div>
+            <div class="form-item">
+                <label>初步诊断 <span style="color: red;">*</span></label>
+                <input type="text" placeholder="输入诊断结果，支持ICD编码检索">
+            </div>
+            <div class="form-item">
+                <label>处理意见/处方</label>
+                <textarea style="height: 100px;" placeholder="用药建议、检查项目、注意事项"></textarea>
+            </div>
+            
+            <div class="text-right mt-20">
+                <button class="btn btn-default mr-10" onclick="saveDraft()">暂存</button>
+                <button class="btn btn-primary" onclick="submitRecord()">提交并结束接诊</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        function saveDraft() {
+            showToast('草稿已保存', 'info');
+        }
+
+        function submitRecord() {
+            if(confirm('确定要提交病历并结束本次接诊吗？\n提交后将不可修改。')) {
+                showToast('提交成功！', 'success');
+                setTimeout(() => {
+                    location.href = 'index.html';
+                }, 1500);
+            }
+        }
+    </script>
+</body>
+</html>

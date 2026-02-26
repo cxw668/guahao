@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - XX医院在线预约挂号系统</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            /* background: linear-gradient(135deg, #165DFF 0%, #722ED1 100%); */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .login-container {
+            width: 420px;
+            padding: 40px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-header h2 {
+            color: #165DFF;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .login-header p {
+            color: #888;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .role-switch {
+            display: flex;
+            background: #f5f7fa;
+            border-radius: 4px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+        .role-option {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .role-option.active {
+            background: #fff;
+            color: #165DFF;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="login-header">
+            <h2>XX医院在线预约挂号系统</h2>
+            <p>专业的医疗服务平台</p>
+        </div>
+
+        <div class="role-switch">
+            <div class="role-option active" onclick="selectRole('patient')">患者</div>
+            <div class="role-option" onclick="selectRole('doctor')">医生</div>
+            <div class="role-option" onclick="selectRole('admin')">管理员</div>
+        </div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-item">
+                <label>账号/手机号</label>
+                <input type="text" id="username" placeholder="请输入账号或手机号" required>
+            </div>
+            
+            <div class="form-item">
+                <label>密码</label>
+                <input type="password" id="password" placeholder="请输入密码" required>
+            </div>
+
+            <div class="form-item">
+                <label>验证码</label>
+                <div class="flex">
+                    <input type="text" id="captcha" placeholder="请输入验证码" style="width: 60%; margin-right: 10px;" required>
+                    <button type="button" class="btn btn-default" style="width: 40%;">获取验证码</button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100" style="height: 40px; font-size: 16px;">登 录</button>
+            
+            <div class="flex-between mt-20" style="font-size: 14px;">
+                <a href="register.html" style="color: #165DFF;">患者注册</a>
+                <a href="#" style="color: #888;">忘记密码？</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let currentRole = 'patient';
+
+        function selectRole(role) {
+            currentRole = role;
+            document.querySelectorAll('.role-option').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            // Simple validation simulation
+            if (username) {
+                // Save session (simulated)
+                localStorage.setItem('userRole', currentRole);
+                localStorage.setItem('userName', username);
+                
+                // Redirect based on role
+                if (currentRole === 'patient') {
+                    window.location.href = 'patient/index.html';
+                } else if (currentRole === 'doctor') {
+                    window.location.href = 'doctor/index.html';
+                } else if (currentRole === 'admin') {
+                    window.location.href = 'admin/index.html';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

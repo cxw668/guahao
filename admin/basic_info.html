@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基础信息管理 - XX医院在线预约挂号系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .sidebar { background: #232a3b; border-right: none; top: 60px; }
+        .menu-item { color: #aaa; }
+        .menu-item:hover { background: #165DFF; color: #fff; }
+        .menu-item.active { background: #165DFF; color: #fff; border-right: none; }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="header" style="background: #232a3b; border-bottom: none; color: #fff;">
+        <div class="logo" style="color: #fff;">
+            <i style="font-style: normal;">🛠️</i> 系统管理后台
+        </div>
+        <div class="flex-center">
+            <span class="mr-20">管理员：Admin</span>
+            <button class="btn btn-danger btn-sm" onclick="logout()">退出登录</button>
+        </div>
+    </div>
+
+    <!-- 左侧侧边栏 -->
+    <div class="sidebar">
+        <div class="menu-item" onclick="location.href='index.html'"><i style="font-style: normal;">📊</i> 综合监控</div>
+        <div class="menu-item active" onclick="location.href='basic_info.html'"><i style="font-style: normal;">🏥</i> 基础信息管理</div>
+        <div class="menu-item" onclick="location.href='pool.html'"><i style="font-style: normal;">🔢</i> 号源池管理</div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main">
+        <div class="card mb-20">
+            <div class="flex-between mb-20">
+                <div class="flex">
+                    <button class="btn btn-primary mr-10" id="btn-dept" onclick="switchTab('dept')">科室管理</button>
+                    <button class="btn btn-default" id="btn-doc" onclick="switchTab('doc')">医生管理</button>
+                </div>
+                <div class="flex">
+                    <input type="text" placeholder="请输入关键词" style="border: 1px solid #eee; padding: 8px; border-radius: 4px; margin-right: 10px;">
+                    <button class="btn btn-primary">搜索</button>
+                    <button class="btn btn-primary ml-10">+ 新增</button>
+                </div>
+            </div>
+
+            <!-- 科室列表 -->
+            <div id="tab-dept">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>科室ID</th>
+                            <th>科室名称</th>
+                            <th>所属院区</th>
+                            <th>关联医生数</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1001</td>
+                            <td>心内科</td>
+                            <td>本部</td>
+                            <td>15</td>
+                            <td><span class="label label-green">启用</span></td>
+                            <td>
+                                <button class="btn btn-default btn-sm">编辑</button>
+                                <button class="btn btn-danger btn-sm ml-5">停用</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>1002</td>
+                            <td>儿科</td>
+                            <td>东院区</td>
+                            <td>12</td>
+                            <td><span class="label label-green">启用</span></td>
+                            <td>
+                                <button class="btn btn-default btn-sm">编辑</button>
+                                <button class="btn btn-danger btn-sm ml-5">停用</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 医生列表 -->
+            <div id="tab-doc" style="display: none;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>工号</th>
+                            <th>姓名</th>
+                            <th>职称</th>
+                            <th>所属科室</th>
+                            <th>手机号</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>D001</td>
+                            <td>李四</td>
+                            <td>主任医师</td>
+                            <td>心内科</td>
+                            <td>138****1234</td>
+                            <td><span class="label label-green">在职</span></td>
+                            <td>
+                                <button class="btn btn-default btn-sm">编辑</button>
+                                <button class="btn btn-danger btn-sm ml-5">禁用</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>D002</td>
+                            <td>王五</td>
+                            <td>副主任医师</td>
+                            <td>骨科</td>
+                            <td>139****5678</td>
+                            <td><span class="label label-green">在职</span></td>
+                            <td>
+                                <button class="btn btn-default btn-sm">编辑</button>
+                                <button class="btn btn-danger btn-sm ml-5">禁用</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+    <script>
+        function switchTab(tab) {
+            if(tab === 'dept') {
+                document.getElementById('tab-dept').style.display = 'block';
+                document.getElementById('tab-doc').style.display = 'none';
+                document.getElementById('btn-dept').className = 'btn btn-primary mr-10';
+                document.getElementById('btn-doc').className = 'btn btn-default';
+            } else {
+                document.getElementById('tab-dept').style.display = 'none';
+                document.getElementById('tab-doc').style.display = 'block';
+                document.getElementById('btn-dept').className = 'btn btn-default mr-10';
+                document.getElementById('btn-doc').className = 'btn btn-primary';
+            }
+        }
+    </script>
+</body>
+</html>
