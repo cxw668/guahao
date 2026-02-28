@@ -4,6 +4,7 @@ import { getRouters } from '@/api/menu'
 import Layout from '@/layout/index'
 import ParentView from '@/components/ParentView'
 import InnerLink from '@/layout/components/InnerLink'
+import { isHttp } from '@/utils/validate'
 
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../../views/**/*.vue')
@@ -58,6 +59,9 @@ const usePermissionStore = defineStore(
 // 遍历后台传来的路由字符串，转换为组件对象
 function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
   return asyncRouterMap.filter(route => {
+    if (!lastRouter && typeof route.path === 'string' && route.path !== '' && !route.path.startsWith('/') && !isHttp(route.path)) {
+      route.path = `/${route.path}`
+    }
     if (type && route.children) {
       route.children = filterChildren(route.children)
     }
