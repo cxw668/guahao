@@ -54,7 +54,6 @@ INSERT INTO `sys_menu` VALUES (2002, '医生管理', 2000, 3, 'doctor', 'medical
 INSERT INTO `sys_menu` VALUES (2003, '号源管理', 2000, 4, 'schedule', 'medical/schedule/index', NULL, '', 0, 0, 'C', '0', '0', 'medical:schedule:list', 'date', 'admin', '2026-02-28 14:49:08', 'admin', '2026-02-28 14:49:08', '医生排班与号源');
 INSERT INTO `sys_menu` VALUES (2004, '预约管理', 2000, 5, 'appointment', 'medical/appointment/index', NULL, '', 0, 0, 'C', '0', '0', 'medical:appointment:list', 'message', 'admin', '2026-02-28 14:49:08', 'admin', '2026-02-28 14:49:08', '患者预约订单');
 INSERT INTO `sys_menu` VALUES (2006, '数据大屏', 2000, 1, 'dashboard', 'medical/dashboard/index', NULL, '', 1, 1, 'C', '0', '0', 'medical:dashboard:list', 'monitor', 'admin', NULL, 'admin', '2026-03-02 13:50:50', '数据大屏');
-INSERT INTO `sys_menu` VALUES (3000, '医生端', 0, 0, 'doctor', 'Layout', NULL, '', 1, 0, '', '0', '0', '', 'system', 'doctor', NULL, 'doctor', NULL, '医生端');
 
 INSERT INTO `sys_menu` VALUES
 (3000, '医生端', 0, 0, 'medical-doctor', 'Layout', NULL, '', 0, 0, 'M', '0', '0', '', 'system', 'doctor', NULL, 'doctor', NULL, '医生端');

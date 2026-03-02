@@ -15,7 +15,7 @@ const PortalRedirectView = {
     function resolvePortalPath(roles) {
       if (roles?.includes('admin')) return '/medical/index'
       if (roles?.includes('doctor')) return '/medical-doctor/workbench'
-      return '/medical-patient/home'
+      if (roles?.includes('common')) return '/medical-patient/home'
     }
 
     async function redirectByRole() {

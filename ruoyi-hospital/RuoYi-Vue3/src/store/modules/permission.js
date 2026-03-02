@@ -94,7 +94,7 @@ function flatMedicalChildren(routes) {
   }
   const result = []
   routes.forEach(route => {
-    const isMedical = route && (route.name === 'Medical')
+    const isMedical = route && (route.name === 'Medical' || route.name === 'Medical-doctor')
     if (!isMedical) {
       result.push(route)
       return

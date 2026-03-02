@@ -7,15 +7,8 @@
         </el-select>
       </el-form-item>
       <el-form-item label="日期">
-        <el-date-picker
-          v-model="queryDate"
-          type="date"
-          value-format="YYYY-MM-DD"
-          placeholder="请选择日期"
-          style="width: 240px;"
-          clearable
-          @change="handleQuery"
-        />
+        <el-date-picker v-model="queryDate" type="date" value-format="YYYY-MM-DD" placeholder="请选择日期"
+          style="width: 240px;" clearable @change="handleQuery" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Refresh" :loading="loading" @click="refreshAll">刷新</el-button>
@@ -119,7 +112,8 @@
             <span>今日预约列表</span>
           </template>
           <el-table v-loading="loading" :data="todayAppointmentList" size="small">
-            <el-table-column label="预约单号" align="center" prop="appointmentNo" width="170" :show-overflow-tooltip="true" />
+            <el-table-column label="预约单号" align="center" prop="appointmentNo" width="170"
+              :show-overflow-tooltip="true" />
             <el-table-column label="时间段" align="center" prop="timeSlot" width="120" />
             <el-table-column label="就诊人ID" align="center" prop="visitorId" width="100" />
             <el-table-column label="支付" align="center" prop="payStatus" width="80">
@@ -296,27 +290,34 @@ getDoctorOptions().then(() => refreshAll())
   font-weight: 600;
   line-height: 32px;
 }
+
 .stat-desc {
   margin-top: 6px;
   font-size: 12px;
   color: var(--el-text-color-secondary);
 }
+
 .stat-warn {
   color: var(--el-color-warning);
 }
+
 .stat-primary {
   color: var(--el-color-primary);
 }
+
 .stat-success {
   color: var(--el-color-success);
 }
+
 .stat-mini {
   padding: 6px 0;
 }
+
 .stat-mini-label {
   font-size: 12px;
   color: var(--el-text-color-secondary);
 }
+
 .stat-mini-value {
   margin-top: 4px;
   font-size: 20px;

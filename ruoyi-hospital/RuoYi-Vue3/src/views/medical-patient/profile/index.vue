@@ -7,6 +7,9 @@
             <el-button text @click="router.push('/medical-patient/home')">返回</el-button>
             <span class="header__title">个人中心</span>
           </div>
+          <div class="header__right">
+            <el-button type="primary" @click="handleLogout">退出登录</el-button>
+          </div>
         </div>
       </template>
 
@@ -273,6 +276,15 @@ async function handleDelete(row) {
   await delMedicalPatientVisitor(id)
   ElMessage.success('已删除')
   getList()
+}
+
+function handleLogout() {
+  ElMessageBox.confirm('确认退出登录吗？', '提示', { type: 'warning' })
+    .then(() => {
+      userStore.logOut()
+      router.replace('/login')
+    })
+    .catch(() => {})
 }
 
 onMounted(() => {
