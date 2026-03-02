@@ -37,9 +37,9 @@ const usePermissionStore = defineStore(
         return new Promise(resolve => {
           // 向后端请求路由数据
           getRouters().then(res => {
-            const sdata = JSON.parse(JSON.stringify(res.data))
-            const rdata = JSON.parse(JSON.stringify(res.data))
-            const defaultData = JSON.parse(JSON.stringify(res.data))
+            const sdata = flatMedicalChildren(JSON.parse(JSON.stringify(res.data)))
+            const rdata = flatMedicalChildren(JSON.parse(JSON.stringify(res.data)))
+            const defaultData = flatMedicalChildren(JSON.parse(JSON.stringify(res.data)))
             const sidebarRoutes = filterAsyncRouter(sdata)
             const rewriteRoutes = filterAsyncRouter(rdata, false, true)
             const defaultRoutes = filterAsyncRouter(defaultData)
@@ -56,7 +56,7 @@ const usePermissionStore = defineStore(
     }
   })
 
-// 遍历后台传来的路由字符串，转换为组件对象
+  // 遍历后台传来的路由字符串，转换为组件对象
 function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
   return asyncRouterMap.filter(route => {
     if (!lastRouter && typeof route.path === 'string' && route.path !== '' && !route.path.startsWith('/') && !isHttp(route.path)) {
@@ -86,6 +86,44 @@ function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
     return true
   })
 }
+
+// 处理管理端和医生端菜单展示 =》不展示父级菜单
+function flatMedicalChildren(routes) {
+  if (!Array.isArray(routes)) {
+    return routes
+  }
+  const result = []
+  routes.forEach(route => {
+    const isMedical = route && (route.name === 'Medical')
+    if (!isMedical) {
+      result.push(route)
+      return
+    }
+    const children = Array.isArray(route.children) ? route.children : []
+    children.forEach(child => {
+      if (!child) {
+        return
+      }
+      const childPath = typeof child.path === 'string' ? child.path : ''
+      const base = 'medical'
+      const fullPath = childPath ? `${base}/${childPath}` : base
+      result.push({
+        path: fullPath,
+        component: 'Layout',
+        hidden: child.hidden,
+        alwaysShow: false,
+        children: [
+          {
+            ...child,
+            path: ''
+          }
+        ]
+      })
+    })
+  })
+  return result
+}
+
 
 function filterChildren(childrenMap, lastRouter = false) {
   var children = []

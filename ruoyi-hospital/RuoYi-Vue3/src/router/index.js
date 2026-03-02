@@ -48,23 +48,13 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: "/:pathMatch(.*)*",
-    component: () => import('@/views/error/404'),
-    hidden: true
-  },
-  {
-    path: '/401',
-    component: () => import('@/views/error/401'),
-    hidden: true
-  },
-  {
     path: '',
     component: Layout,
-    redirect: '/index',
+    redirect: '/medical/index',
     children: [
       {
-        path: '/index',
-        component: () => import('@/views/index'),
+        path: '/medical/index',
+        component: () => import('@/views/medical/index.vue'),
         name: 'Index',
         meta: { title: '首页', icon: 'dashboard', affix: true }
       }
@@ -81,6 +71,123 @@ export const constantRoutes = [
         component: () => import('@/views/system/user/profile/index'),
         name: 'Profile',
         meta: { title: '个人中心', icon: 'user' }
+      }
+    ]
+  },
+  // 医生端路由
+  {
+    path: '/medical-doctor',
+    component: Layout,
+    hidden: true,
+    redirect: '/medical-doctor/consult',
+    children: [
+      {
+        path: 'consult',
+        component: () => import('@/views/medical-doctor/consult/index.vue'),
+        name: 'MedicalDoctorConsult',
+        meta: { title: '医生端-咨询' }
+      },
+      {
+        path: 'queue',
+        component: () => import('@/views/medical-doctor/queue/index.vue'),
+        name: 'MedicalDoctorQueue',
+        meta: { title: '医生端-队列' }
+      },
+      {
+        path: 'schedule',
+        component: () => import('@/views/medical-doctor/schedule/index.vue'),
+        name: 'MedicalDoctorSchedule',
+        meta: { title: '医生端-排班' }
+      },
+      {
+        path: 'workbench',
+        component: () => import('@/views/medical-doctor/workbench/index.vue'),
+        name: 'MedicalDoctorWorkbench',
+        meta: { title: '医生端-工作台' }
+      }
+    ]
+  },
+  // 患者端 路由
+  {
+    path: '/medical-patient',
+    component: () => import('@/layout/PatientLayout.vue'),
+    hidden: true,
+    redirect: '/medical-patient/home',
+    children: [
+      {
+        path: 'home',
+        component: () => import('@/views/medical-patient/home/index.vue'),
+        name: 'MedicalPatientHome',
+        meta: { title: '患者端-首页' }
+      },
+      {
+        path: 'department',
+        component: () => import('@/views/medical-patient/department/index.vue'),
+        name: 'MedicalPatientDepartment',
+        meta: { title: '患者端-科室' }
+      },
+      {
+        path: 'doctor',
+        component: () => import('@/views/medical-patient/doctor/index.vue'),
+        redirect: '/medical-patient/doctor/list',
+        children: [
+          {
+            path: 'list',
+            component: () => import('@/views/medical-patient/doctor/list.vue'),
+            name: 'MedicalPatientDoctorList',
+            meta: { title: '患者端-医生' }
+          },
+          {
+            path: 'detail/:doctorId(\\d+)',
+            component: () => import('@/views/medical-patient/doctor/detail.vue'),
+            name: 'MedicalPatientDoctorDetail',
+            meta: { title: '患者端-医生详情' }
+          }
+        ]
+      },
+      {
+        path: 'schedule',
+        component: () => import('@/views/medical-patient/schedule/index.vue'),
+        name: 'MedicalPatientSchedule',
+        meta: { title: '患者端-排班' }
+      },
+      {
+        path: 'appointment',
+        component: () => import('@/views/medical-patient/appointment/index.vue'),
+        redirect: '/medical-patient/appointment/confirm',
+        children: [
+          {
+            path: 'confirm',
+            component: () => import('@/views/medical-patient/appointment/confirm.vue'),
+            name: 'MedicalPatientAppointmentConfirm',
+            meta: { title: '患者端-确认预约' }
+          },
+          {
+            path: 'success',
+            component: () => import('@/views/medical-patient/appointment/success.vue'),
+            name: 'MedicalPatientAppointmentSuccess',
+            meta: { title: '患者端-预约成功' }
+          }
+        ]
+      },
+      {
+        path: 'order',
+        component: () => import('@/views/medical-patient/order/index.vue'),
+        redirect: '/medical-patient/order/list',
+        children: [
+          {
+            path: 'list',
+            component: () => import('@/views/medical-patient/order/list.vue'),
+            name: 'MedicalPatientOrderList',
+            meta: { title: '患者端-我的预约' }
+          }
+        ]
+      },
+      {
+        path: 'profile',
+        component: () => import('@/views/medical-patient/profile/index.vue'),
+        name: 'MedicalPatientProfile',
+        meta: { title: '患者端-个人中心' }
       }
     ]
   }
