@@ -45,8 +45,13 @@
 </template>
 
 <script setup name="MedicalIndex">
+import { onMounted } from 'vue';
+import { listRole } from '../../api/system/role';
 const router = useRouter()
-
+onMounted(async () => {
+  const {rows} = await listRole()
+  console.log(rows)
+})
 function go(path) {
   router.push(path)
 }

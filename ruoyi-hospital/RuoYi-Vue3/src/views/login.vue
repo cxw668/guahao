@@ -78,6 +78,11 @@ const route = useRoute()
 const router = useRouter()
 const { proxy } = getCurrentInstance()
 
+/**
+ * admin => admin admin123
+ * common => common common123
+ * doctor => doctor doctor123
+ */
 const loginForm = ref({
   username: "admin",
   password: "admin123",

@@ -1,6 +1,48 @@
-import { createWebHistory, createRouter } from 'vue-router'
+import { h, onMounted, ref } from 'vue'
+import { createWebHistory, createRouter, useRouter } from 'vue-router'
 /* Layout */
 import Layout from '@/layout'
+import useUserStore from '@/store/modules/user'
+import { getToken } from '@/utils/auth'
+
+const PortalRedirectView = {
+  name: 'PortalRedirectView',
+  setup() {
+    const router = useRouter()
+    const userStore = useUserStore()
+    const isRedirecting = ref(false)
+
+    function resolvePortalPath(roles) {
+      if (roles?.includes('admin')) return '/medical/index'
+      if (roles?.includes('doctor')) return '/medical-doctor/workbench'
+      return '/medical-patient/home'
+    }
+
+    async function redirectByRole() {
+      if (isRedirecting.value) return
+      isRedirecting.value = true
+
+      const token = getToken()
+      if (!token) {
+        router.replace('/login')
+        return
+      }
+
+      try {
+        if (!Array.isArray(userStore.roles) || userStore.roles.length === 0) {
+          await userStore.getInfo()
+        }
+        router.replace(resolvePortalPath(userStore.roles))
+      } catch (e) {
+        router.replace('/login')
+      }
+    }
+
+    onMounted(() => redirectByRole())
+
+    return () => h('div')
+  }
+}
 
 /**
  * Note: 路由配置项
@@ -13,7 +55,7 @@ import Layout from '@/layout'
  * redirect: noRedirect             // 当设置 noRedirect 的时候该路由在面包屑导航中不可被点击
  * name:'router-name'               // 设定路由的名字，一定要填写不然使用<keep-alive>时会出现各种问题
  * query: '{"id": 1, "name": "ry"}' // 访问路由的默认传递参数
- * roles: ['admin', 'common']       // 访问路由的角色权限
+ * roles: ['admin', 'common', 'doctor']       // 访问路由的角色权限 id 1 2 3
  * permissions: ['a:a:a', 'b:b:b']  // 访问路由的菜单权限
  * meta : {
     noCache: true                   // 如果设置为true，则不会被 <keep-alive> 缓存(默认 false)
@@ -48,15 +90,31 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '',
+    path: '/',
     component: Layout,
+    hidden: true,
+    redirect: '/portal',
+    children: [
+      {
+        path: 'portal',
+        component: PortalRedirectView,
+        name: 'Portal',
+        meta: { title: '首页', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/medical',
+    roles: ['admin'],
+    component: Layout,
+    hidden: true,
     redirect: '/medical/index',
     children: [
       {
-        path: '/medical/index',
+        path: 'index',
         component: () => import('@/views/medical/index.vue'),
-        name: 'Index',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
+        name: 'MedicalIndex',
+        meta: { title: '管理端-首页' }
       }
     ]
   },
@@ -77,6 +135,7 @@ export const constantRoutes = [
   // 医生端路由
   {
     path: '/medical-doctor',
+    roles: ['doctor'],
     component: Layout,
     hidden: true,
     redirect: '/medical-doctor/consult',
@@ -110,6 +169,7 @@ export const constantRoutes = [
   // 患者端 路由
   {
     path: '/medical-patient',
+    roles: ['common'],
     component: () => import('@/layout/PatientLayout.vue'),
     hidden: true,
     redirect: '/medical-patient/home',
