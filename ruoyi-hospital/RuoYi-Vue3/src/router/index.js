@@ -3,6 +3,7 @@ import { createWebHistory, createRouter, useRouter } from 'vue-router'
 /* Layout */
 import Layout from '@/layout'
 import useUserStore from '@/store/modules/user'
+import useTagsViewStore from '@/store/modules/tagsView'
 import { getToken } from '@/utils/auth'
 
 const PortalRedirectView = {
@@ -10,6 +11,7 @@ const PortalRedirectView = {
   setup() {
     const router = useRouter()
     const userStore = useUserStore()
+    const tagsViewStore = useTagsViewStore()
     const isRedirecting = ref(false)
 
     function resolvePortalPath(roles) {

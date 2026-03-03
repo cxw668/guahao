@@ -123,12 +123,9 @@ const useTagsViewStore = defineStore(
         })
       },
       updateVisitedView(view) {
-        for (let v of this.visitedViews) {
-          if (v.path === view.path) {
-            v = Object.assign(v, view)
-            break
-          }
-        }
+        const index = this.visitedViews.findIndex(v => v.path === view.path)
+        if (index === -1) return
+        this.visitedViews[index] = Object.assign({}, this.visitedViews[index], view)
       },
       delRightTags(view) {
         return new Promise(resolve => {

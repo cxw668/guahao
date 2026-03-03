@@ -10,8 +10,6 @@
 </template>
 
 <script setup>
-import useTagsViewStore from '@/store/modules/tagsView'
-
 const tagAndTagSpacing = ref(4)
 const { proxy } = getCurrentInstance()
 
@@ -36,53 +34,37 @@ const emitScroll = () => {
   emits('scroll')
 }
 
-const tagsViewStore = useTagsViewStore()
-const visitedViews = computed(() => tagsViewStore.visitedViews)
-
 function moveToTarget(currentTag) {
   const $container = proxy.$refs.scrollContainer.$el
   const $containerWidth = $container.offsetWidth
   const $scrollWrapper = scrollWrapper.value
 
-  let firstTag = null
-  let lastTag = null
+  const tagListDom = Array.from(document.getElementsByClassName('tags-view-item'))
+  if (tagListDom.length === 0) return
 
-  // find first tag and last tag
-  if (visitedViews.value.length > 0) {
-    firstTag = visitedViews.value[0]
-    lastTag = visitedViews.value[visitedViews.value.length - 1]
+  const currentIndex = tagListDom.findIndex(el => el?.dataset?.path === currentTag?.path)
+  if (currentIndex === -1) return
+
+  if (currentIndex === 0) {
+    $scrollWrapper.scrollLeft = 0
+    return
   }
 
-  if (firstTag === currentTag) {
-    $scrollWrapper.scrollLeft = 0
-  } else if (lastTag === currentTag) {
+  if (currentIndex === tagListDom.length - 1) {
     $scrollWrapper.scrollLeft = $scrollWrapper.scrollWidth - $containerWidth
-  } else {
-    const tagListDom = document.getElementsByClassName('tags-view-item')
-    const currentIndex = visitedViews.value.findIndex(item => item === currentTag)
-    let prevTag = null
-    let nextTag = null
-    for (const k in tagListDom) {
-      if (k !== 'length' && Object.hasOwnProperty.call(tagListDom, k)) {
-        if (tagListDom[k].dataset.path === visitedViews.value[currentIndex - 1].path) {
-          prevTag = tagListDom[k]
-        }
-        if (tagListDom[k].dataset.path === visitedViews.value[currentIndex + 1].path) {
-          nextTag = tagListDom[k]
-        }
-      }
-    }
+    return
+  }
 
-    // the tag's offsetLeft after of nextTag
-    const afterNextTagOffsetLeft = nextTag.offsetLeft + nextTag.offsetWidth + tagAndTagSpacing.value
+  const prevTagDom = tagListDom[currentIndex - 1]
+  const nextTagDom = tagListDom[currentIndex + 1]
+  if (!prevTagDom || !nextTagDom) return
 
-    // the tag's offsetLeft before of prevTag
-    const beforePrevTagOffsetLeft = prevTag.offsetLeft - tagAndTagSpacing.value
-    if (afterNextTagOffsetLeft > $scrollWrapper.scrollLeft + $containerWidth) {
-      $scrollWrapper.scrollLeft = afterNextTagOffsetLeft - $containerWidth
-    } else if (beforePrevTagOffsetLeft < $scrollWrapper.scrollLeft) {
-      $scrollWrapper.scrollLeft = beforePrevTagOffsetLeft
-    }
+  const afterNextTagOffsetLeft = nextTagDom.offsetLeft + nextTagDom.offsetWidth + tagAndTagSpacing.value
+  const beforePrevTagOffsetLeft = prevTagDom.offsetLeft - tagAndTagSpacing.value
+  if (afterNextTagOffsetLeft > $scrollWrapper.scrollLeft + $containerWidth) {
+    $scrollWrapper.scrollLeft = afterNextTagOffsetLeft - $containerWidth
+  } else if (beforePrevTagOffsetLeft < $scrollWrapper.scrollLeft) {
+    $scrollWrapper.scrollLeft = beforePrevTagOffsetLeft
   }
 }
 
