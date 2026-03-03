@@ -1,6 +1,8 @@
 package com.ruoyi.medical.service;
 
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.common.utils.SecurityUtils;
@@ -8,10 +10,10 @@ import com.ruoyi.medical.domain.MedicalDepartment;
 import com.ruoyi.medical.mapper.MedicalDepartmentMapper;
 
 @Service
+@RequiredArgsConstructor
 public class MedicalDepartmentService
 {
-    @Autowired
-    private MedicalDepartmentMapper medicalDepartmentMapper;
+    private final MedicalDepartmentMapper medicalDepartmentMapper;
 
     public List<MedicalDepartment> selectMedicalDepartmentList(MedicalDepartment query)
     {

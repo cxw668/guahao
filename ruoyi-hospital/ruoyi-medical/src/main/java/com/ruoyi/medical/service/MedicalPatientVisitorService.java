@@ -1,16 +1,18 @@
 package com.ruoyi.medical.service;
 
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.medical.domain.MedicalPatientVisitor;
 import com.ruoyi.medical.mapper.MedicalPatientVisitorMapper;
 
 @Service
+@RequiredArgsConstructor
 public class MedicalPatientVisitorService
 {
-    @Autowired
-    private MedicalPatientVisitorMapper medicalPatientVisitorMapper;
+    private final MedicalPatientVisitorMapper medicalPatientVisitorMapper;
 
     public List<MedicalPatientVisitor> selectMedicalPatientVisitorList(MedicalPatientVisitor query)
     {

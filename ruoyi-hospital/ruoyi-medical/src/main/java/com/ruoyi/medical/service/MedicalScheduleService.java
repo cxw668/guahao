@@ -1,6 +1,8 @@
 package com.ruoyi.medical.service;
 
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.common.utils.SecurityUtils;
@@ -8,10 +10,10 @@ import com.ruoyi.medical.domain.MedicalSchedule;
 import com.ruoyi.medical.mapper.MedicalScheduleMapper;
 
 @Service
+@RequiredArgsConstructor
 public class MedicalScheduleService
 {
-    @Autowired
-    private MedicalScheduleMapper medicalScheduleMapper;
+    private final MedicalScheduleMapper medicalScheduleMapper;
 
     public List<MedicalSchedule> selectMedicalScheduleList(MedicalSchedule query)
     {
