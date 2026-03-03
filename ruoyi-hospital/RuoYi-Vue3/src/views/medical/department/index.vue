@@ -35,7 +35,7 @@
       <el-col :span="1.5">
         <el-button type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" />
+      <!-- <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" /> -->
     </el-row>
 
     <el-table

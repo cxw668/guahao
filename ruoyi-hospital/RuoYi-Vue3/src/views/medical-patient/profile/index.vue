@@ -8,7 +8,7 @@
             <span class="header__title">个人中心</span>
           </div>
           <div class="header__right">
-            <el-button type="primary" @click="handleLogout">退出登录</el-button>
+            <el-button type="danger" @click="handleLogout"><el-icon><Close /></el-icon>&nbsp;退出登录</el-button>
           </div>
         </div>
       </template>
@@ -32,33 +32,50 @@
         </div>
       </template>
 
-      <el-table v-loading="loading" :data="visitorList" row-key="visitorId">
-        <el-table-column label="姓名" prop="name" min-width="160" />
-        <el-table-column label="关系" prop="relation" width="120" />
-        <el-table-column label="手机号" prop="phone" width="140" />
-        <el-table-column label="默认" width="90">
-          <template #default="{ row }">
-            <el-tag v-if="row.isDefault === 1" type="success">默认</el-tag>
-            <el-tag v-else type="info">否</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="220" fixed="right">
-          <template #default="{ row }">
-            <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
-            <el-button
-              v-if="row.isDefault !== 1"
-              link
-              type="success"
-              @click="setDefault(row)"
-            >
-              设为默认
-            </el-button>
-            <el-button link type="danger" @click="handleDelete(row)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      <div v-loading="loading" class="visitor-list">
+        <el-row :gutter="12">
+          <el-col v-for="visitor in visitorList" :key="visitor.visitorId" :xs="24" :sm="12" :md="8" :lg="6">
+            <el-card shadow="hover" class="visitor-card mb16">
+              <div class="visitor-header">
+                <div class="visitor-name">
+                  <span>{{ visitor.name }}</span>
+                  <el-tag size="small" type="info" class="ml8">{{ visitor.relation }}</el-tag>
+                  <el-tag v-if="visitor.isDefault === 1" size="small" type="success" class="ml8">默认</el-tag>
+                </div>
+                <div class="visitor-action">
+                  <el-button link type="primary" size="small" @click="handleEdit(visitor)">编辑</el-button>
+                  <el-button link type="danger" size="small" @click="handleDelete(visitor)">删除</el-button>
+                </div>
+              </div>
+              
+              <div class="visitor-content">
+                <div class="info-item">
+                  <el-icon><Iphone /></el-icon>
+                  <span>{{ visitor.phone }}</span>
+                </div>
+                <div class="info-item">
+                  <el-icon><Postcard /></el-icon>
+                  <span>{{ visitor.idCard }}</span>
+                </div>
+              </div>
 
-      <el-empty v-if="!loading && !visitorList.length" description="暂无就诊人，请先新增" />
+              <div class="visitor-footer" v-if="visitor.isDefault !== 1">
+                <el-button 
+                  class="btn-block" 
+                  type="success" 
+                  plain 
+                  size="small" 
+                  @click="setDefault(visitor)"
+                >
+                  设为默认就诊人
+                </el-button>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+
+        <el-empty v-if="!loading && !visitorList.length" description="暂无就诊人，请先新增" />
+      </div>
     </el-card>
 
     <el-dialog v-model="open" :title="dialogTitle" width="860px" append-to-body>
@@ -292,7 +309,7 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .patient-page {
   max-width: 1100px;
   margin: 0 auto;
@@ -333,5 +350,75 @@ onMounted(() => {
   margin-top: 6px;
   font-size: 12px;
   color: #909399;
+}
+
+.visitor-list {
+  min-height: 200px;
+}
+
+.visitor-card {
+  transition: all 0.3s;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  :deep(.el-card__body) {
+    padding: 16px;
+  }
+}
+
+.visitor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.visitor-name {
+  font-weight: 700;
+  font-size: 16px;
+  color: #303133;
+  display: flex;
+  align-items: center;
+}
+
+.visitor-action {
+  display: flex;
+  gap: 8px;
+}
+
+.visitor-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #606266;
+  
+  .el-icon {
+    margin-right: 8px;
+    font-size: 16px;
+    color: #909399;
+  }
+}
+
+.visitor-footer {
+  padding-top: 12px;
+  border-top: 1px solid #ebeef5;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.ml8 {
+  margin-left: 8px;
 }
 </style>

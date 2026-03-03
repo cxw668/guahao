@@ -32,35 +32,41 @@
       </el-form>
     </el-card>
 
-    <el-card>
-      <el-table v-loading="loading" :data="doctorList" row-key="doctorId">
-        <el-table-column label="医生" min-width="220">
-          <template #default="{ row }">
-            <div class="doctor-cell">
-              <el-avatar :size="40" :src="resolveUrl(row.avatar)">
-                {{ (row.doctorName || '').slice(0, 1) }}
-              </el-avatar>
-              <div class="doctor-cell__info">
-                <div class="doctor-cell__name">
-                  <span>{{ row.doctorName }}</span>
-                  <el-tag v-if="row.title" class="ml8" size="small" type="info">{{ row.title }}</el-tag>
-                </div>
-                <div class="doctor-cell__meta">
-                  <span v-if="row.deptId">{{ deptNameById(row.deptId) }}</span>
-                  <span v-if="row.specialty"> · {{ row.specialty }}</span>
+    <div v-loading="loading" class="doctor-list">
+      <el-row :gutter="12">
+        <el-col v-for="doctor in doctorList" :key="doctor.doctorId" :xs="24" :sm="12" :md="8" :lg="6">
+          <el-card shadow="hover" class="doctor-card mb16">
+            <div class="doctor-card__header">
+              <div class="doctor-info">
+                <el-avatar :size="50" :src="resolveUrl(doctor.avatar)">
+                  {{ (doctor.doctorName || '').slice(0, 1) }}
+                </el-avatar>
+                <div class="doctor-meta">
+                  <div class="doctor-name">
+                    <span>{{ doctor.doctorName }}</span>
+                    <el-tag v-if="doctor.title" size="small" type="info" class="ml8">{{ doctor.title }}</el-tag>
+                  </div>
+                  <div class="doctor-dept">
+                    <span v-if="doctor.deptId">{{ deptNameById(doctor.deptId) }}</span>
+                    <span v-if="doctor.specialty"> · {{ doctor.specialty }}</span>
+                  </div>
                 </div>
               </div>
+              <div class="doctor-fee">
+                <span class="fee-label">挂号费</span>
+                <span class="fee-value">¥{{ doctor.fee }}</span>
+              </div>
             </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="挂号费" prop="fee" width="110" />
-        <el-table-column label="操作" width="200" fixed="right">
-          <template #default="{ row }">
-            <el-button link type="primary" @click="goDetail(row)">详情</el-button>
-            <el-button link type="success" @click="goSchedule(row)">选排班</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+            
+            <div class="doctor-card__footer">
+              <el-button type="primary" plain size="small" @click="goDetail(doctor)">查看详情</el-button>
+              <el-button type="success" size="small" @click="goSchedule(doctor)">立即预约</el-button>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+      
+      <el-empty v-if="!loading && doctorList.length === 0" description="暂无医生数据" />
 
       <pagination
         v-show="total > 0"
@@ -69,7 +75,7 @@
         v-model:limit="queryParams.pageSize"
         @pagination="getList"
       />
-    </el-card>
+    </div>
   </div>
 </template>
 
@@ -161,7 +167,7 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .patient-page {
   max-width: 1100px;
   margin: 0 auto;
@@ -187,29 +193,79 @@ onMounted(() => {
   font-weight: 700;
 }
 
-.doctor-cell {
+.doctor-list {
+  min-height: 400px;
+}
+
+.doctor-card {
+  transition: all 0.3s;
+  cursor: pointer;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  :deep(.el-card__body) {
+    padding: 16px;
+  }
+}
+
+.doctor-card__header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.doctor-info {
+  display: flex;
+  gap: 12px;
+}
+
+.doctor-meta {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.doctor-name {
+  font-weight: 700;
+  font-size: 16px;
+  color: #303133;
+  margin-bottom: 4px;
   display: flex;
   align-items: center;
-  gap: 10px;
 }
 
-.doctor-cell__info {
-  min-width: 0;
+.doctor-dept {
+  font-size: 13px;
+  color: #909399;
 }
 
-.doctor-cell__name {
+.doctor-fee {
+  text-align: right;
   display: flex;
-  align-items: center;
-  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.doctor-cell__meta {
-  margin-top: 4px;
+.fee-label {
   font-size: 12px;
   color: #909399;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+}
+
+.fee-value {
+  color: #f56c6c;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.doctor-card__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #ebeef5;
 }
 
 .ml8 {

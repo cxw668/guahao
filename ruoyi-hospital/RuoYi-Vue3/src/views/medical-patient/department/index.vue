@@ -27,17 +27,31 @@
       </el-form>
     </el-card>
 
-    <el-card>
-      <el-table v-loading="loading" :data="deptList" row-key="deptId">
-        <el-table-column label="科室" prop="deptName" min-width="200" />
-        <el-table-column label="位置" prop="location" min-width="200" />
-        <el-table-column label="电话" prop="phone" width="140" />
-        <el-table-column label="操作" width="120" fixed="right">
-          <template #default="{ row }">
-            <el-button link type="primary" @click="goDoctors(row)">查看医生</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+    <div v-loading="loading" class="dept-list">
+      <el-row :gutter="12">
+        <el-col v-for="dept in deptList" :key="dept.deptId" :xs="24" :sm="12" :md="8" :lg="6">
+          <el-card shadow="hover" class="dept-card mb16" @click="goDoctors(dept)">
+            <div class="dept-info">
+              <div class="dept-name">{{ dept.deptName }}</div>
+              <div class="dept-meta">
+                <div class="meta-item">
+                  <el-icon><Location /></el-icon>
+                  <span>{{ dept.location || '暂无位置信息' }}</span>
+                </div>
+                <div class="meta-item">
+                  <el-icon><Phone /></el-icon>
+                  <span>{{ dept.phone || '暂无联系电话' }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="dept-action">
+              <el-icon><ArrowRight /></el-icon>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+
+      <el-empty v-if="!loading && deptList.length === 0" description="暂无科室数据" />
 
       <pagination
         v-show="total > 0"
@@ -46,7 +60,7 @@
         v-model:limit="queryParams.pageSize"
         @pagination="getList"
       />
-    </el-card>
+    </div>
   </div>
 </template>
 
@@ -107,7 +121,7 @@ watch(
 )
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .patient-page {
   max-width: 1100px;
   margin: 0 auto;
@@ -129,7 +143,82 @@ watch(
   gap: 8px;
 }
 
-.header__title {
-  font-weight: 700;
+.dept-list {
+  min-height: 400px;
 }
+
+.dept-card {
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: var(--el-color-primary-light-5);
+    
+    .dept-name {
+      color: var(--el-color-primary);
+    }
+    
+    .dept-action {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  :deep(.el-card__body) {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.dept-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.dept-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #303133;
+  margin-bottom: 12px;
+  transition: color 0.3s;
+}
+
+.dept-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #909399;
+  
+  .el-icon {
+    margin-right: 6px;
+    font-size: 14px;
+  }
+}
+
+.dept-action {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.3s;
+  color: #c0c4cc;
+  font-size: 20px;
+  
+  @media screen and (max-width: 768px) {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 </style>

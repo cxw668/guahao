@@ -57,11 +57,7 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" />
-    </el-row>
-
-    <el-table v-loading="loading" :data="appointmentList">
+    <el-table v-loading="loading" :data="appointmentList" style="margin-top: 20px;">
       <el-table-column label="预约ID" align="center" prop="appointmentId" width="90" />
       <el-table-column label="预约单号" align="center" prop="appointmentNo" width="170" :show-overflow-tooltip="true" />
       <el-table-column label="患者ID" align="center" prop="patientId" width="90" />

@@ -35,57 +35,77 @@
       </el-form>
     </el-card>
 
-    <el-card>
-      <el-table v-loading="loading" :data="orderList" row-key="appointmentId">
-        <el-table-column label="订单号" prop="appointmentNo" min-width="180" />
-        <el-table-column label="就诊日期" prop="appointmentDate" width="140" />
-        <el-table-column label="时段" width="100">
-          <template #default="{ row }">{{ periodText(row.period) }}</template>
-        </el-table-column>
-        <el-table-column label="时间" prop="timeSlot" min-width="140" />
-        <el-table-column label="费用" width="100">
-          <template #default="{ row }"><span class="fee">{{ row.fee ?? 0 }}</span></template>
-        </el-table-column>
-        <el-table-column label="状态" width="110">
-          <template #default="{ row }">
-            <el-tag :type="statusTagType(row.status)">{{ statusText(row.status) }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="支付" width="110">
-          <template #default="{ row }">
-            <el-tag :type="payTagType(row.payStatus)">{{ payText(row.payStatus) }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="260" fixed="right">
-          <template #default="{ row }">
-            <el-button link type="primary" @click="openDetail(row)">详情</el-button>
-            <el-button
-              v-if="row.payStatus === 0 && row.status === 0"
-              link
-              type="success"
-              @click="openPay(row)"
-            >
-              支付
-            </el-button>
-            <el-button
-              v-if="row.status === 0 || row.status === 1"
-              link
-              type="danger"
-              @click="cancelOrder(row)"
-            >
-              取消
-            </el-button>
-            <el-button
-              v-if="row.status === 1 && row.payStatus === 1"
-              link
-              type="warning"
-              @click="checkin(row)"
-            >
-              签到
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+    <div v-loading="loading" class="order-list">
+      <el-row :gutter="12">
+        <el-col v-for="order in orderList" :key="order.appointmentId" :xs="24" :sm="12" :md="8" :lg="8">
+          <el-card shadow="hover" class="order-card mb16">
+            <template #header>
+              <div class="order-header">
+                <span class="order-no">订单号：{{ order.appointmentNo }}</span>
+                <el-tag :type="statusTagType(order.status)" size="small">{{ statusText(order.status) }}</el-tag>
+              </div>
+            </template>
+            
+            <div class="order-content" @click="openDetail(order)">
+              <div class="order-item">
+                <span class="label">就诊时间</span>
+                <span class="value">{{ order.appointmentDate }} {{ periodText(order.period) }}</span>
+              </div>
+              <div class="order-item">
+                <span class="label">具体时段</span>
+                <span class="value">{{ order.timeSlot || '—' }}</span>
+              </div>
+              <div class="order-item">
+                <span class="label">挂号费用</span>
+                <span class="value fee">¥{{ order.fee ?? 0 }}</span>
+              </div>
+              <div class="order-item">
+                <span class="label">支付状态</span>
+                <span class="value">
+                  <el-tag :type="payTagType(order.payStatus)" size="small" effect="plain">
+                    {{ payText(order.payStatus) }}
+                  </el-tag>
+                </span>
+              </div>
+            </div>
+
+            <div class="order-footer">
+              <el-button link type="primary" size="small" @click="openDetail(order)">查看详情</el-button>
+              <div class="actions">
+                <el-button
+                  v-if="order.payStatus === 0 && order.status === 0"
+                  type="success"
+                  size="small"
+                  plain
+                  @click="openPay(order)"
+                >
+                  去支付
+                </el-button>
+                <el-button
+                  v-if="order.status === 1 && order.payStatus === 1"
+                  type="warning"
+                  size="small"
+                  plain
+                  @click="checkin(order)"
+                >
+                  签到
+                </el-button>
+                <el-button
+                  v-if="order.status === 0 || order.status === 1"
+                  type="danger"
+                  size="small"
+                  plain
+                  @click="cancelOrder(order)"
+                >
+                  取消
+                </el-button>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+
+      <el-empty v-if="!loading && orderList.length === 0" description="暂无预约记录" />
 
       <pagination
         v-show="total > 0"
@@ -94,7 +114,7 @@
         v-model:limit="queryParams.pageSize"
         @pagination="getList"
       />
-    </el-card>
+    </div>
 
     <el-dialog v-model="detailOpen" title="订单详情" width="720px" append-to-body>
       <el-descriptions v-if="detail" :column="2" border>
@@ -302,7 +322,7 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .patient-page {
   max-width: 1100px;
   margin: 0 auto;
@@ -331,5 +351,77 @@ onMounted(() => {
 .fee {
   color: #f56c6c;
   font-weight: 700;
+}
+
+.order-list {
+  min-height: 400px;
+}
+
+.order-card {
+  transition: all 0.3s;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  :deep(.el-card__header) {
+    padding: 12px 16px;
+    background-color: #fafafa;
+  }
+
+  :deep(.el-card__body) {
+    padding: 16px;
+  }
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-no {
+  font-size: 13px;
+  color: #606266;
+  font-weight: 500;
+}
+
+.order-content {
+  cursor: pointer;
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  .label {
+    color: #909399;
+  }
+  
+  .value {
+    color: #303133;
+    font-weight: 500;
+  }
+}
+
+.order-footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #ebeef5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  .actions {
+    display: flex;
+    gap: 8px;
+  }
 }
 </style>

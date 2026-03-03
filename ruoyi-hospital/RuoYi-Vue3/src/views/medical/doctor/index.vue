@@ -2,22 +2,12 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="医生姓名" prop="doctorName">
-        <el-input
-          v-model="queryParams.doctorName"
-          placeholder="请输入医生姓名"
-          clearable
-          style="width: 240px;"
-          @keyup.enter="handleQuery"
-        />
+        <el-input v-model="queryParams.doctorName" placeholder="请输入医生姓名" clearable style="width: 240px;"
+          @keyup.enter="handleQuery" />
       </el-form-item>
       <el-form-item label="工号" prop="doctorCode">
-        <el-input
-          v-model="queryParams.doctorCode"
-          placeholder="请输入工号"
-          clearable
-          style="width: 240px;"
-          @keyup.enter="handleQuery"
-        />
+        <el-input v-model="queryParams.doctorCode" placeholder="请输入工号" clearable style="width: 240px;"
+          @keyup.enter="handleQuery" />
       </el-form-item>
       <el-form-item label="科室" prop="deptId">
         <el-select v-model="queryParams.deptId" placeholder="请选择科室" clearable style="width: 240px;">
@@ -30,18 +20,18 @@
           <el-option label="暂停" :value="1" />
         </el-select>
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+      <el-form-item style="width: 100vw">
+        <div class="btn-container" style="display: flex; justify-content: space-between; width: calc(100% - 300px); align-items: center;">
+          <div class="left-btns">
+            <el-button type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
+          </div>
+          <div class="right-btns">
+            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+          </div>
+        </div>
       </el-form-item>
     </el-form>
-
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
-      </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" />
-    </el-row>
 
     <el-table v-loading="loading" :data="doctorList">
       <el-table-column label="医生ID" align="center" prop="doctorId" width="90" />
@@ -81,14 +71,8 @@
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList"
-    />
-
+    <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize" @pagination="getList" />
     <el-dialog v-model="open" :title="title" width="880px" append-to-body>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="90px">
         <el-row :gutter="20">
@@ -116,7 +100,8 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="挂号费" prop="fee">
-              <el-input-number v-model="form.fee" :min="0" :precision="2" controls-position="right" style="width: 100%;" />
+              <el-input-number v-model="form.fee" :min="0" :precision="2" controls-position="right"
+                style="width: 100%;" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -298,7 +283,7 @@ function handleDelete(row) {
   }).then(() => {
     proxy.$modal.msgSuccess('删除成功')
     getList()
-  }).catch(() => {})
+  }).catch(() => { })
 }
 
 getDeptOptions()

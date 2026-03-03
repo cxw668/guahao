@@ -10,13 +10,15 @@
 
       <el-input
         v-model="keyword"
-        placeholder="搜索医生/科室（按回车默认搜医生）"
+        placeholder="搜索医生/科室"
         clearable
         @keyup.enter="handleSearchDoctor"
       >
         <template #append>
-          <el-button @click="handleSearchDoctor">搜医生</el-button>
-          <el-button @click="handleSearchDepartment">搜科室</el-button>
+          <div class="s-btns">
+            <el-button type="primary" class="s-btns__doctor" @click="handleSearchDoctor">搜医生</el-button>
+            <el-button type="info" class="s-btns__dept" @click="handleSearchDepartment">搜科室</el-button>
+          </div>
         </template>
       </el-input>
     </el-card>
@@ -96,7 +98,7 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .patient-page {
   max-width: 1100px;
   margin: 0 auto;
@@ -129,5 +131,49 @@ onMounted(() => {
   margin-top: 6px;
   font-size: 12px;
   color: #909399;
+}
+
+.s-btns {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  :deep(.el-button) {
+    border-radius: 4px;
+    height: 40px;
+    padding: 0 20px;
+    font-weight: 500;
+    margin: 0;
+    transition: all 0.3s;
+    border: 1px solid #606266;
+  }
+
+  .s-btns__doctor {
+    background-color: var(--el-color-primary);
+    color: #ffffff;
+
+    &:hover {
+      background-color: var(--el-color-primary-light-3);
+    }
+  }
+
+  .s-btns__dept {
+    background-color: #f2f3f5;
+    color: #606266;
+
+    &:hover {
+      background-color: #e6e8eb;
+      color: #303133;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    gap: 8px;
+    
+    :deep(.el-button) {
+      padding: 0 12px;
+      font-size: 13px;
+    }
+  }
 }
 </style>

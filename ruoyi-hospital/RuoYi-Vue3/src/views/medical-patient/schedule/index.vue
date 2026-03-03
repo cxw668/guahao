@@ -31,48 +31,50 @@
       </div>
     </el-card>
 
-    <el-card v-loading="loading">
-      <el-table v-if="doctorId" :data="scheduleList" row-key="scheduleId">
-        <el-table-column label="日期" prop="workDate" width="140" />
-        <el-table-column label="时段" width="120">
-          <template #default="{ row }">
-            <el-tag :type="periodTagType(row.period)" effect="plain">{{ periodText(row.period) }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="时间" min-width="160">
-          <template #default="{ row }">
-            <span v-if="row.startTime && row.endTime">{{ row.startTime }} - {{ row.endTime }}</span>
-            <span v-else>—</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="剩余号源" width="120">
-          <template #default="{ row }">
-            <span :class="{ danger: remainingSlots(row) <= 0 }">{{ remainingSlots(row) }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="状态" width="120">
-          <template #default="{ row }">
-            <el-tag v-if="row.status === 0" type="success">可约</el-tag>
-            <el-tag v-else-if="row.status === 1" type="info">停诊</el-tag>
-            <el-tag v-else type="warning">已满</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="120" fixed="right">
-          <template #default="{ row }">
-            <el-button
-              type="success"
-              link
-              :disabled="row.status !== 0 || remainingSlots(row) <= 0"
-              @click="goConfirm(row)"
-            >
-              选择
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+    <div v-loading="loading" class="schedule-list">
+      <el-row :gutter="12" v-if="doctorId">
+        <el-col v-for="schedule in scheduleList" :key="schedule.scheduleId" :xs="24" :sm="12" :md="8" :lg="6">
+          <el-card 
+            shadow="hover" 
+            class="schedule-card mb16" 
+            :class="{ 'is-disabled': schedule.status !== 0 || remainingSlots(schedule) <= 0 }"
+            @click="goConfirm(schedule)"
+          >
+            <div class="schedule-header">
+              <span class="date">{{ schedule.workDate }}</span>
+              <el-tag :type="periodTagType(schedule.period)" size="small" effect="dark">{{ periodText(schedule.period) }}</el-tag>
+            </div>
+            
+            <div class="schedule-body">
+              <div class="time-range">{{ schedule.startTime }} - {{ schedule.endTime }}</div>
+              <div class="slots-info">
+                <span class="label">剩余号源</span>
+                <span class="value" :class="{ danger: remainingSlots(schedule) <= 0 }">
+                  {{ remainingSlots(schedule) }}
+                </span>
+              </div>
+            </div>
+
+            <div class="schedule-footer">
+              <div class="status-tag">
+                <el-tag v-if="schedule.status === 0" type="success" size="small" effect="plain">可预约</el-tag>
+                <el-tag v-else-if="schedule.status === 1" type="info" size="small" effect="plain">停诊</el-tag>
+                <el-tag v-else type="warning" size="small" effect="plain">已约满</el-tag>
+              </div>
+              <el-button 
+                type="primary" 
+                size="small" 
+                :disabled="schedule.status !== 0 || remainingSlots(schedule) <= 0"
+              >
+                选择
+              </el-button>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
 
       <el-empty v-if="doctorId && !scheduleList.length && !loading" description="暂无可预约排班" />
-    </el-card>
+    </div>
   </div>
 </template>
 
@@ -151,7 +153,7 @@ watch(
 )
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .patient-page {
   max-width: 1100px;
   margin: 0 auto;
@@ -193,6 +195,104 @@ watch(
   margin-top: 6px;
   color: #909399;
   font-size: 12px;
+}
+
+.schedule-list {
+  min-height: 400px;
+}
+
+.schedule-card {
+  transition: all 0.3s;
+  cursor: pointer;
+  border: 1px solid #ebeef5;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: var(--el-color-primary-light-5);
+  }
+  
+  &.is-disabled {
+    cursor: not-allowed;
+    background-color: #f5f7fa;
+    
+    &:hover {
+      transform: none;
+      box-shadow: none;
+      border-color: #ebeef5;
+    }
+  }
+
+  :deep(.el-card__body) {
+    padding: 16px;
+  }
+}
+
+.schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  
+  .date {
+    font-size: 16px;
+    font-weight: 700;
+    color: #303133;
+  }
+}
+
+.schedule-body {
+  margin-bottom: 16px;
+}
+
+.time-range {
+  font-size: 14px;
+  color: #606266;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #909399;
+    margin-right: 8px;
+  }
+}
+
+.slots-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f2f6fc;
+  padding: 8px 12px;
+  border-radius: 4px;
+  
+  .label {
+    font-size: 13px;
+    color: #909399;
+  }
+  
+  .value {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--el-color-primary);
+    
+    &.danger {
+      color: #f56c6c;
+    }
+  }
+}
+
+.schedule-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid #ebeef5;
 }
 
 .danger {
