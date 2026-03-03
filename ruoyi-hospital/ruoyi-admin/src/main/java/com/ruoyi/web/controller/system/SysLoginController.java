@@ -101,8 +101,46 @@ public class SysLoginController
     public AjaxResult getRouters()
     {
         Long userId = SecurityUtils.getUserId();
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        SysUser user = loginUser.getUser();
+        Set<String> roles = permissionService.getRolePermission(user);
         List<SysMenu> menus = menuService.selectMenuTreeByUserId(userId);
+        if (roles.contains("admin"))
+        {
+            removePortalMenus(menus, "medical-doctor");
+        }
         return AjaxResult.success(menuService.buildMenus(menus));
+    }
+
+    private void removePortalMenus(List<SysMenu> menus, String portalPrefix)
+    {
+        if (menus == null || menus.isEmpty() || StringUtils.isEmpty(portalPrefix))
+        {
+            return;
+        }
+        menus.removeIf(menu -> shouldRemovePortalMenu(menu, portalPrefix));
+        for (SysMenu menu : menus)
+        {
+            if (menu.getChildren() != null && !menu.getChildren().isEmpty())
+            {
+                removePortalMenus(menu.getChildren(), portalPrefix);
+            }
+        }
+    }
+
+    private boolean shouldRemovePortalMenu(SysMenu menu, String portalPrefix)
+    {
+        if (menu == null)
+        {
+            return false;
+        }
+        String path = menu.getPath();
+        if (portalPrefix.equals(path))
+        {
+            return true;
+        }
+        String component = menu.getComponent();
+        return StringUtils.isNotEmpty(component) && component.startsWith(portalPrefix + "/");
     }
     
     // 检查初始密码是否提醒修改

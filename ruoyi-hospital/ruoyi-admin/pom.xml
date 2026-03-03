@@ -59,6 +59,12 @@
             <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-medical</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>

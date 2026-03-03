@@ -133,7 +133,7 @@ function handleLogin() {
           }
           return acc
         }, {})
-        router.push({ path: redirect.value || "/", query: otherQueryParams })
+        router.push({ path: '/portal', query: otherQueryParams }) // 登录后跳转到各自的路由
       }).catch(() => {
         loading.value = false
         // 重新获取验证码

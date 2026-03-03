@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +28,12 @@ import com.ruoyi.framework.config.ServerConfig;
  */
 @RestController
 @RequestMapping("/common")
+@RequiredArgsConstructor
 public class CommonController
 {
     private static final Logger log = LoggerFactory.getLogger(CommonController.class);
 
-    @Autowired
-    private ServerConfig serverConfig;
+    private final ServerConfig serverConfig;
 
     private static final String FILE_DELIMITER = ",";
 

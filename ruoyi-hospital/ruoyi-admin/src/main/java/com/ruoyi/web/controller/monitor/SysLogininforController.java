@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.monitor;
 
 import java.util.List;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,13 +28,11 @@ import com.ruoyi.system.service.ISysLogininforService;
  */
 @RestController
 @RequestMapping("/monitor/logininfor")
+@RequiredArgsConstructor
 public class SysLogininforController extends BaseController
 {
-    @Autowired
-    private ISysLogininforService logininforService;
-
-    @Autowired
-    private SysPasswordService passwordService;
+    private final ISysLogininforService logininforService;
+    private final SysPasswordService passwordService;
 
     @PreAuthorize("@ss.hasPermi('monitor:logininfor:list')")
     @GetMapping("/list")

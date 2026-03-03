@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.monitor;
 
 import java.util.List;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,10 +27,10 @@ import com.ruoyi.system.service.ISysOperLogService;
  */
 @RestController
 @RequestMapping("/monitor/operlog")
+@RequiredArgsConstructor
 public class SysOperlogController extends BaseController
 {
-    @Autowired
-    private ISysOperLogService operLogService;
+    private final ISysOperLogService operLogService;
 
     @PreAuthorize("@ss.hasPermi('monitor:operlog:list')")
     @GetMapping("/list")

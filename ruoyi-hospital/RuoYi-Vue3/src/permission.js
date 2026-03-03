@@ -49,6 +49,16 @@ router.beforeEach((to, from, next) => {
           })
         })
       } else {
+        // 确保角色只能访问自身的端口
+        const roles = useUserStore().roles
+        const requiredRoles = to.matched
+          .map(r => r.roles)
+          .filter(Array.isArray)
+          .reduce((acc, cur) => acc.concat(cur), [])
+        if (requiredRoles.length > 0 && !requiredRoles.some(r => roles.includes(r))) {
+          next({ path: '/portal' })
+          return
+        }
         next()
       }
     }

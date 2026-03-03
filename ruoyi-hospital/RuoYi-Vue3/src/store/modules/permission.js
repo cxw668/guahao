@@ -94,8 +94,8 @@ function flatMedicalChildren(routes) {
   }
   const result = []
   routes.forEach(route => {
-    const isMedical = route && (route.name === 'Medical' || route.name === 'Medical-doctor')
-    if (!isMedical) {
+    const base = resolvePortalBase(route)
+    if (!base) {
       result.push(route)
       return
     }
@@ -105,7 +105,6 @@ function flatMedicalChildren(routes) {
         return
       }
       const childPath = typeof child.path === 'string' ? child.path : ''
-      const base = 'medical'
       const fullPath = childPath ? `${base}/${childPath}` : base
       result.push({
         path: fullPath,
@@ -122,6 +121,19 @@ function flatMedicalChildren(routes) {
     })
   })
   return result
+}
+
+function resolvePortalBase(route) {
+  if (!route) {
+    return ''
+  }
+  if (route.name === 'Medical') {
+    return 'medical'
+  }
+  if (route.name === 'Medical-doctor') {
+    return 'medical-doctor'
+  }
+  return ''
 }
 
 
