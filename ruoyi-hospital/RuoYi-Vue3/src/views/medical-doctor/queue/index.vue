@@ -36,10 +36,6 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" />
-    </el-row>
-
     <el-table v-loading="loading" :data="appointmentList" highlight-current-row @current-change="handleCurrentChange">
       <el-table-column label="预约单号" align="center" prop="appointmentNo" width="170" :show-overflow-tooltip="true" />
       <el-table-column label="时间段" align="center" prop="timeSlot" width="120" />

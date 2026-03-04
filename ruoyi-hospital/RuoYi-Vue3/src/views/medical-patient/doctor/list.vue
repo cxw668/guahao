@@ -25,6 +25,12 @@
             @keyup.enter="handleQuery"
           />
         </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="queryParams.status" placeholder="全部" clearable style="width: 120px;">
+            <el-option label="正常" :value="0" />
+            <el-option label="停诊" :value="1" />
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
           <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -45,6 +51,8 @@
                   <div class="doctor-name">
                     <span>{{ doctor.doctorName }}</span>
                     <el-tag v-if="doctor.title" size="small" type="info" class="ml8">{{ doctor.title }}</el-tag>
+                    <el-tag v-if="doctor.status === 0" size="small" type="success" class="ml8">可约</el-tag>
+                    <el-tag v-else size="small" type="warning" class="ml8">暂停</el-tag>
                   </div>
                   <div class="doctor-dept">
                     <span v-if="doctor.deptId">{{ deptNameById(doctor.deptId) }}</span>
@@ -60,7 +68,14 @@
             
             <div class="doctor-card__footer">
               <el-button type="primary" plain size="small" @click="goDetail(doctor)">查看详情</el-button>
-              <el-button type="success" size="small" @click="goSchedule(doctor)">立即预约</el-button>
+              <el-button 
+                type="success" 
+                size="small" 
+                :disabled="doctor.status !== 0"
+                @click="goSchedule(doctor)"
+              >
+                {{ doctor.status === 0 ? '立即预约' : '暂停预约' }}
+              </el-button>
             </div>
           </el-card>
         </el-col>
@@ -100,7 +115,7 @@ const queryParams = ref({
   pageSize: 10,
   deptId: undefined,
   doctorName: undefined,
-  status: 0
+  status: undefined
 })
 
 function resolveUrl(url) {

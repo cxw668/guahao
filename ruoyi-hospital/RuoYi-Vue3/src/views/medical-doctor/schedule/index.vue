@@ -30,18 +30,18 @@
           <el-option label="已满" :value="2" />
         </el-select>
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+      <el-form-item style="width: 100%;">
+        <el-row :gutter="20" style="width: 100%;" justify="space-between">
+          <el-col :span="12">
+            <el-button type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
+          </el-col>
+          <el-col :span="12" style="text-align: right;">
+            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+          </el-col>
+        </el-row>
       </el-form-item>
     </el-form>
-
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
-      </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" />
-    </el-row>
 
     <el-table v-loading="loading" :data="scheduleList">
       <el-table-column label="排班ID" align="center" prop="scheduleId" width="90" />

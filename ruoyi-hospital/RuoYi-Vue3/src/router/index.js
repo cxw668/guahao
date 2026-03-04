@@ -135,6 +135,18 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/test',
+    component: Layout,
+    name: 'Test',
+    children: [{
+      path: 'job',
+      component: () => import('@/views/monitor/job/index.vue'),
+      name: 'TestJob',
+      meta: { title: '测试-任务' }
+    }],
+    meta: { title: '测试' }
+  },
   // 医生端路由
   {
     path: '/medical-doctor',
