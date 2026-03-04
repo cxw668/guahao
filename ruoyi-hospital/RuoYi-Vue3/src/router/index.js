@@ -247,7 +247,6 @@ export const constantRoutes = [
       },
       {
         path: 'order',
-        component: () => import('@/views/medical-patient/order/index.vue'),
         redirect: '/medical-patient/order/list',
         children: [
           {

@@ -158,4 +158,70 @@ public interface MedicalAppointmentMapper
             "where appointment_id = #{appointmentId}"
     })
     int finishMedicalAppointment(@Param("appointmentId") Long appointmentId, @Param("updateBy") String updateBy);
+
+    /**
+     * 检查并更新过期预约
+     * 将 appointment_date 早于当前日期且状态不是 3(已完成)、4(已取消)、5(已过期) 的预约更新为状态 5
+     * @param updateBy 更新人
+     * @return 更新的记录数
+     */
+    @Update({
+            "update medical_appointment set",
+            "status = 5,",
+            "update_by = #{updateBy},",
+            "update_time = sysdate()",
+            "where appointment_date < CURDATE()",
+            "and status not in (3, 4, 5)"
+    })
+    int checkAndUpdateExpiredAppointments(@Param("updateBy") String updateBy);
+
+    /**
+     * 查询未完结的预约列表（排除已取消、已完成、已过期的预约）
+     * @param query 查询条件
+     * @return 预约列表
+     */
+    @Select({
+            "<script>",
+            "select",
+            "appointment_id as appointmentId,",
+            "appointment_no as appointmentNo,",
+            "patient_id as patientId,",
+            "visitor_id as visitorId,",
+            "doctor_id as doctorId,",
+            "schedule_id as scheduleId,",
+            "appointment_date as appointmentDate,",
+            "period as period,",
+            "time_slot as timeSlot,",
+            "status as status,",
+            "fee as fee,",
+            "pay_status as payStatus,",
+            "pay_time as payTime,",
+            "pay_way as payWay,",
+            "checkin_time as checkinTime,",
+            "finish_time as finishTime,",
+            "cancel_time as cancelTime,",
+            "cancel_reason as cancelReason,",
+            "medical_record_id as medicalRecordId,",
+            "create_by as createBy,",
+            "create_time as createTime,",
+            "update_by as updateBy,",
+            "update_time as updateTime,",
+            "remark as remark",
+            "from medical_appointment",
+            "<where>",
+            "  status not in (3, 4, 5)",
+            "  <if test='appointmentId != null'>and appointment_id = #{appointmentId}</if>",
+            "  <if test='appointmentNo != null and appointmentNo != \"\"'>and appointment_no = #{appointmentNo}</if>",
+            "  <if test='patientId != null'>and patient_id = #{patientId}</if>",
+            "  <if test='visitorId != null'>and visitor_id = #{visitorId}</if>",
+            "  <if test='doctorId != null'>and doctor_id = #{doctorId}</if>",
+            "  <if test='scheduleId != null'>and schedule_id = #{scheduleId}</if>",
+            "  <if test='appointmentDate != null'>and appointment_date = #{appointmentDate}</if>",
+            "  <if test='period != null'>and period = #{period}</if>",
+            "  <if test='payStatus != null'>and pay_status = #{payStatus}</if>",
+            "</where>",
+            "order by appointment_id desc",
+            "</script>"
+    })
+    List<MedicalAppointment> selectActiveMedicalAppointmentList(MedicalAppointment query);
 }

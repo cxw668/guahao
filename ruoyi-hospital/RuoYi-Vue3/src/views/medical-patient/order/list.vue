@@ -4,34 +4,44 @@
       <template #header>
         <div class="header">
           <div class="header__left">
-            <el-button text @click="router.push('/medical-patient/home')">返回</el-button>
+            <el-button text @click="router.push('/medical-patient/home')"><el-icon><Back/></el-icon>返回</el-button>
             <span class="header__title">我的预约</span>
           </div>
         </div>
       </template>
 
-      <el-form :model="queryParams" inline>
-        <el-form-item label="状态">
-          <el-select v-model="queryParams.status" placeholder="全部" clearable style="width: 200px;">
-            <el-option label="待支付" :value="0" />
-            <el-option label="待就诊" :value="1" />
-            <el-option label="就诊中" :value="2" />
-            <el-option label="已完成" :value="3" />
-            <el-option label="已取消" :value="4" />
-            <el-option label="失约" :value="5" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="支付">
-          <el-select v-model="queryParams.payStatus" placeholder="全部" clearable style="width: 200px;">
-            <el-option label="未支付" :value="0" />
-            <el-option label="已支付" :value="1" />
-            <el-option label="已退款" :value="2" />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" icon="Search" @click="handleQuery">查询</el-button>
-          <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-        </el-form-item>
+      <el-form :model="queryParams" class="search-form">
+        <el-row :gutter="10">
+          <el-col :xs="24" :sm="8" :md="6">
+            <el-form-item label="状态" prop="status">
+              <el-select v-model="queryParams.status" placeholder="全部" clearable style="width: 100%;">
+                <el-option label="待支付" :value="0" />
+                <el-option label="待就诊" :value="1" />
+                <el-option label="就诊中" :value="2" />
+                <el-option label="已完成" :value="3" />
+                <el-option label="已取消" :value="4" />
+                <el-option label="失约" :value="5" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="8" :md="6">
+            <el-form-item label="支付" prop="payStatus">
+              <el-select v-model="queryParams.payStatus" placeholder="全部" clearable style="width: 100%;">
+                <el-option label="未支付" :value="0" />
+                <el-option label="已支付" :value="1" />
+                <el-option label="已退款" :value="2" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="8" :md="12">
+            <el-form-item label-width="0">
+              <div class="search-btns">
+                <el-button type="primary" icon="Search" @click="handleQuery">查询</el-button>
+                <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+              </div>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
     </el-card>
 
@@ -42,7 +52,10 @@
             <template #header>
               <div class="order-header">
                 <span class="order-no">订单号：{{ order.appointmentNo }}</span>
-                <el-tag :type="statusTagType(order.status)" size="small">{{ statusText(order.status) }}</el-tag>
+                <div class="header-tags">
+                  <el-tag v-if="isExpired(order.appointmentDate)" class="mr-2" type="danger" size="small" effect="plain">已过期</el-tag>
+                  <el-tag :type="statusTagType(order.status)" size="small">{{ statusText(order.status) }}</el-tag>
+                </div>
               </div>
             </template>
             
@@ -77,6 +90,7 @@
                   type="success"
                   size="small"
                   plain
+                  :disabled="isExpired(order.appointmentDate)"
                   @click="openPay(order)"
                 >
                   去支付
@@ -86,6 +100,7 @@
                   type="warning"
                   size="small"
                   plain
+                  :disabled="isExpired(order.appointmentDate)"
                   @click="checkin(order)"
                 >
                   签到
@@ -95,6 +110,7 @@
                   type="danger"
                   size="small"
                   plain
+                  :disabled="isExpired(order.appointmentDate)"
                   @click="cancelOrder(order)"
                 >
                   取消
@@ -116,21 +132,32 @@
       />
     </div>
 
-    <el-dialog v-model="detailOpen" title="订单详情" width="720px" append-to-body>
-      <el-descriptions v-if="detail" :column="2" border>
-        <el-descriptions-item label="订单号">{{ detail.appointmentNo }}</el-descriptions-item>
-        <el-descriptions-item label="状态">{{ statusText(detail.status) }}</el-descriptions-item>
-        <el-descriptions-item label="就诊日期">{{ detail.appointmentDate }}</el-descriptions-item>
-        <el-descriptions-item label="时段">{{ periodText(detail.period) }}</el-descriptions-item>
-        <el-descriptions-item label="时间" :span="2">{{ detail.timeSlot || '—' }}</el-descriptions-item>
-        <el-descriptions-item label="费用" :span="2"><span class="fee">{{ detail.fee ?? 0 }}</span></el-descriptions-item>
-        <el-descriptions-item label="支付状态">{{ payText(detail.payStatus) }}</el-descriptions-item>
-        <el-descriptions-item label="支付方式">{{ detail.payWay || '—' }}</el-descriptions-item>
-        <el-descriptions-item label="取消原因" :span="2">{{ detail.cancelReason || '—' }}</el-descriptions-item>
-      </el-descriptions>
+    <el-dialog 
+      v-model="detailOpen" 
+      title="订单详情" 
+      width="90%" 
+      :style="{ maxWidth: '520px' }"
+      append-to-body
+      class="mobile-dialog"
+    >
+      <div v-if="detail" class="detail-container">
+        <el-descriptions :column="1" border>
+          <el-descriptions-item label="订单号">{{ detail.appointmentNo }}</el-descriptions-item>
+          <el-descriptions-item label="状态">{{ statusText(detail.status) }}</el-descriptions-item>
+          <el-descriptions-item label="就诊日期">{{ detail.appointmentDate }}</el-descriptions-item>
+          <el-descriptions-item label="时段">{{ periodText(detail.period) }}</el-descriptions-item>
+          <el-descriptions-item label="时间">{{ detail.timeSlot || '—' }}</el-descriptions-item>
+          <el-descriptions-item label="费用"><span class="fee">{{ detail.fee ?? 0 }}</span></el-descriptions-item>
+          <el-descriptions-item label="支付状态">{{ payText(detail.payStatus) }}</el-descriptions-item>
+          <el-descriptions-item label="支付方式">{{ detail.payWay || '—' }}</el-descriptions-item>
+          <el-descriptions-item label="取消原因" v-if="detail.cancelReason">{{ detail.cancelReason }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
       <el-empty v-else description="暂无详情" />
       <template #footer>
-        <el-button @click="detailOpen = false">关闭</el-button>
+        <div class="dialog-footer">
+          <el-button @click="detailOpen = false" style="width: 100%">关闭</el-button>
+        </div>
       </template>
     </el-dialog>
 
@@ -161,6 +188,7 @@ import {
   payMedicalAppointment
 } from '@/api/medical/appointment'
 import useUserStore from '@/store/modules/user'
+import {Back} from "@element-plus/icons-vue";
 
 /**
  * 患者端-我的预约：展示个人预约订单，支持支付/取消/签到与详情查看。
@@ -207,6 +235,18 @@ function statusTagType(status) {
   if (status === 3) return 'info'
   if (status === 4) return 'danger'
   return 'info'
+}
+
+function isExpired(dateStr) {
+  if (!dateStr) return false
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  const today = `${year}-${month}-${day}`
+  // 如果预约日期小于今天，则视为过期
+  // 注意：字符串比较 '2023-10-20' < '2023-10-21' 是有效的
+  return dateStr < today
 }
 
 function payText(payStatus) {
@@ -381,6 +421,15 @@ onMounted(() => {
   align-items: center;
 }
 
+.header-tags {
+  display: flex;
+  align-items: center;
+}
+
+.mr-2 {
+  margin-right: 8px;
+}
+
 .order-no {
   font-size: 13px;
   color: #606266;
@@ -423,5 +472,48 @@ onMounted(() => {
     display: flex;
     gap: 8px;
   }
+}
+
+.search-form {
+  :deep(.el-form-item) {
+    margin-bottom: 12px;
+    margin-right: 0;
+  }
+  
+  :deep(.el-select) {
+    width: 100%;
+  }
+}
+
+.search-btns {
+  display: flex;
+  gap: 8px;
+  
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    
+    .el-button {
+      flex: 1;
+    }
+  }
+}
+
+.mobile-dialog {
+  border-radius: 8px;
+  
+  :deep(.el-dialog__body) {
+    padding: 10px 16px;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  
+  :deep(.el-descriptions__label) {
+    width: 80px;
+    color: #909399;
+  }
+}
+
+.dialog-footer {
+  width: 100%;
 }
 </style>

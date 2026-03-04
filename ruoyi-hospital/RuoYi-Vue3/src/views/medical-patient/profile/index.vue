@@ -4,7 +4,7 @@
       <template #header>
         <div class="header">
           <div class="header__left">
-            <el-button text @click="router.push('/medical-patient/home')">返回</el-button>
+            <el-button text @click="router.push('/medical-patient/home')"><el-icon><Back/></el-icon>返回</el-button>
             <span class="header__title">个人中心</span>
           </div>
           <div class="header__right">
@@ -159,6 +159,7 @@ import {
   updateMedicalPatientVisitor
 } from '@/api/medical/patientVisitor'
 import useUserStore from '@/store/modules/user'
+import {Back} from "@element-plus/icons-vue";
 
 /**
  * 患者端-个人中心：展示用户信息，并提供就诊人档案的增删改与默认设置。

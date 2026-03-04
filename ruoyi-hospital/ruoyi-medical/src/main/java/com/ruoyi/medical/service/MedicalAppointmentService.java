@@ -69,4 +69,24 @@ public class MedicalAppointmentService
     {
         return medicalAppointmentMapper.finishMedicalAppointment(appointmentId, SecurityUtils.getUsername());
     }
+
+    /**
+     * 检查并更新过期预约
+     * 将 appointmentDate 早于当前日期的未完结预约状态更新为 5（已过期）
+     * @return 更新的记录数
+     */
+    public int checkAndUpdateExpiredAppointments()
+    {
+        return medicalAppointmentMapper.checkAndUpdateExpiredAppointments("system_job");
+    }
+
+    /**
+     * 查询所有未完结的预约列表
+     * @param query 查询条件
+     * @return 预约列表
+     */
+    public List<MedicalAppointment> selectActiveMedicalAppointmentList(MedicalAppointment query)
+    {
+        return medicalAppointmentMapper.selectActiveMedicalAppointmentList(query);
+    }
 }

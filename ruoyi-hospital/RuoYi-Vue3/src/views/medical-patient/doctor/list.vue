@@ -4,7 +4,7 @@
       <template #header>
         <div class="header">
           <div class="header__left">
-            <el-button text @click="router.back()">返回</el-button>
+            <el-button text @click="router.back()"><el-icon><Back/></el-icon>返回</el-button>
             <span class="header__title">医生列表</span>
           </div>
         </div>
@@ -98,6 +98,7 @@
 import { listMedicalDepartments } from '@/api/medical/department'
 import { listMedicalDoctors } from '@/api/medical/doctor'
 import { isHttp } from '@/utils/validate'
+import {Back} from "@element-plus/icons-vue";
 
 /**
  * 患者端-医生列表：支持按科室与姓名筛选，并可跳转详情/排班。

@@ -4,7 +4,7 @@
       <template #header>
         <div class="header">
           <div class="header__left">
-            <el-button text @click="router.push('/medical-patient/home')">返回</el-button>
+            <el-button text @click="router.push('/medical-patient/home')"><el-icon><Back/></el-icon>返回</el-button>
             <span class="header__title">科室列表</span>
           </div>
         </div>

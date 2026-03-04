@@ -1,4 +1,5 @@
 package com.ruoyi.quartz.task;
+import com.ruoyi.medical.service.MedicalAppointmentService;
 import org.springframework.stereotype.Component;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.medical.service.MedicalScheduleService;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 public class RyTask
 {
     private final MedicalScheduleService scheduleService;
+    private final MedicalAppointmentService appointmentService;
     public void ryMultipleParams(String s, Boolean b, Long l, Double d, Integer i)
     {
         System.out.println(StringUtils.format("执行多参方法： 字符串类型{}，布尔类型{}，长整型{}，浮点型{}，整形{}", s, b, l, d, i));
@@ -35,5 +37,13 @@ public class RyTask
     {
         scheduleService.generateNextWeekSchedule();
         System.out.println("自动生成下周排班完成");
+    }
+    /**
+     * 每日定时检查预约状态
+     */
+    public void checkAppointmentStatus()
+    {
+        appointmentService.checkAndUpdateExpiredAppointments();
+        System.out.println("检查预约状态完成");
     }
 }

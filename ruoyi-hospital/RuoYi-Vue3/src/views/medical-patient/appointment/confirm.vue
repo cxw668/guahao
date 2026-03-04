@@ -4,7 +4,7 @@
       <template #header>
         <div class="header">
           <div class="header__left">
-            <el-button text @click="router.back()">返回</el-button>
+            <el-button text @click="router.back()"><el-icon><Back /></el-icon>返回</el-button>
             <span class="header__title">确认预约</span>
           </div>
         </div>
@@ -102,6 +102,7 @@ import { getMedicalDoctor } from '@/api/medical/doctor'
 import { getMedicalSchedule } from '@/api/medical/schedule'
 import { listMedicalPatientVisitors } from '@/api/medical/patientVisitor'
 import useUserStore from '@/store/modules/user'
+import {Back} from "@element-plus/icons-vue";
 
 /**
  * 患者端-确认预约：根据 scheduleId 生成预约单，并可选择立即支付。

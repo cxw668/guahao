@@ -2,8 +2,7 @@
   <el-container class="patient-layout">
     <el-header class="patient-header">
       <div class="patient-brand" @click="router.push('/medical-patient/home')">
-        <span class="patient-brand__title">挂号系统</span>
-        <span class="patient-brand__subtitle">患者端</span>
+        <span class="patient-brand__title" style="font-size: 16px; color: green; text-shadow: #00afff 0.5px 0.5px; font-family: FangSong">医疗挂号</span>
       </div>
       <el-menu
         class="patient-menu"

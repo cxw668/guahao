@@ -44,7 +44,7 @@
               <el-card class="dept-card" shadow="hover" @click="goDept(d)">
                 <div class="dept-card__name">{{ d.deptName }}</div>
                 <div class="dept-card__meta">
-                  <span v-if="d.location">{{ d.location }}</span>
+                  <span v-if="d.location && !mobile">{{ d.location }}</span>
                   <span v-else>点击查看医生</span>
                 </div>
               </el-card>
@@ -59,7 +59,7 @@
 
 <script setup name="MedicalPatientHome">
 import { listMedicalDepartments } from '@/api/medical/department'
-
+import {useRouter} from "vue-router";
 /**
  * 患者端-首页：提供搜索入口与科室快捷入口。
  */
@@ -68,6 +68,41 @@ const router = useRouter()
 const loading = ref(false)
 const keyword = ref('')
 const deptList = ref([])
+const mobile = ref(false)
+
+/**
+ * 判断是否为移动设备
+ * 基于设备 UserAgent 和屏幕宽度（768px）综合判断
+ * @returns {boolean} true-移动端，false-非移动端
+ */
+function checkMobile() {
+  // 1. 检查 UserAgent 判断移动设备
+  const ua = navigator.userAgent
+  const isMobileDevice = ua.includes('Android') || ua.includes('iPhone') || ua.includes('Mobile')
+
+  // 2. 检查屏幕宽度
+  const isSmallScreen = window.innerWidth <= 768
+
+  // 满足任一条件即判定为移动端
+  return isMobileDevice || isSmallScreen
+}
+
+/**
+ * 初始化移动端检测
+ */
+function initMobileCheck() {
+  mobile.value = checkMobile()
+
+  // 监听窗口大小变化
+  window.addEventListener('resize', () => {
+    mobile.value = checkMobile()
+  })
+}
+
+onMounted(() => {
+  loadDeptPreview()
+  initMobileCheck()
+})
 
 function handleSearchDoctor() {
   const q = (keyword.value || '').trim()
@@ -93,9 +128,6 @@ async function loadDeptPreview() {
   }
 }
 
-onMounted(() => {
-  loadDeptPreview()
-})
 </script>
 
 <style lang="scss" scoped>

@@ -4,7 +4,7 @@
       <template #header>
         <div class="header">
           <div class="header__left">
-            <el-button text @click="router.back()">返回</el-button>
+            <el-button text @click="router.back()"><el-icon><Back/></el-icon>返回</el-button>
             <span class="header__title">医生详情</span>
           </div>
           <div class="header__right">
@@ -46,6 +46,7 @@
 import { getMedicalDepartment } from '@/api/medical/department'
 import { getMedicalDoctor } from '@/api/medical/doctor'
 import { isHttp } from '@/utils/validate'
+import {Back} from "@element-plus/icons-vue";
 
 /**
  * 患者端-医生详情：展示医生信息，并可进入排班选择。
