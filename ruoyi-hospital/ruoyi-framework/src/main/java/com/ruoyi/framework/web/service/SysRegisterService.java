@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.RegisterBody;
 import com.ruoyi.common.core.redis.RedisCache;
@@ -16,6 +17,7 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
+import com.ruoyi.system.mapper.SysRoleMapper;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
 
@@ -27,6 +29,8 @@ import com.ruoyi.system.service.ISysUserService;
 @Component
 public class SysRegisterService
 {
+    private static final String CLIENT_REGISTER_ROLE_KEY = "common";
+
     @Autowired
     private ISysUserService userService;
 
@@ -36,12 +40,25 @@ public class SysRegisterService
     @Autowired
     private RedisCache redisCache;
 
+    @Autowired
+    private SysRoleMapper roleMapper;
+
     /**
      * 注册
      */
     public String register(RegisterBody registerBody)
     {
+        if (!("true".equals(configService.selectConfigByKey("sys.account.registerUser"))))
+        {
+            return "当前系统没有开启注册功能！";
+        }
+
         String msg = "", username = registerBody.getUsername(), password = registerBody.getPassword();
+        Long registerRoleId = getClientRegisterRoleId();
+        if (registerRoleId == null)
+        {
+            return "注册失败，未配置可注册角色";
+        }
         SysUser sysUser = new SysUser();
         sysUser.setUserName(username);
 
@@ -79,6 +96,8 @@ public class SysRegisterService
             sysUser.setNickName(username);
             sysUser.setPwdUpdateDate(DateUtils.getNowDate());
             sysUser.setPassword(SecurityUtils.encryptPassword(password));
+            // 客户端注册仅允许 common 角色，避免越权注册医生/管理员
+            sysUser.setRoleIds(new Long[] { registerRoleId });
             boolean regFlag = userService.registerUser(sysUser);
             if (!regFlag)
             {
@@ -90,6 +109,24 @@ public class SysRegisterService
             }
         }
         return msg;
+    }
+
+    private Long getClientRegisterRoleId()
+    {
+        SysRole role = roleMapper.checkRoleKeyUnique(CLIENT_REGISTER_ROLE_KEY);
+        if (role == null)
+        {
+            return null;
+        }
+        if (!CLIENT_REGISTER_ROLE_KEY.equals(role.getRoleKey()))
+        {
+            return null;
+        }
+        if (!UserConstants.ROLE_NORMAL.equals(role.getStatus()))
+        {
+            return null;
+        }
+        return role.getRoleId();
     }
 
     /**

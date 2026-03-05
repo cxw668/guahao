@@ -143,9 +143,9 @@ export const constantRoutes = [
       path: 'job',
       component: () => import('@/views/monitor/job/index.vue'),
       name: 'TestJob',
-      meta: { title: '测试-任务' }
+      meta: { title: '自动化服务' }
     }],
-    meta: { title: '测试' }
+    meta: { title: '', icon: 'system' }
   },
   // 医生端路由
   {
