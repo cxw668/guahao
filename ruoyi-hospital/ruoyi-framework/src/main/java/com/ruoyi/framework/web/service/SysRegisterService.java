@@ -91,9 +91,14 @@ public class SysRegisterService
         {
             msg = "保存用户'" + username + "'失败，注册账号已存在";
         }
+        else if (StringUtils.isNotEmpty(registerBody.getEmail()) && !userService.checkEmailUniqueByEmail(registerBody.getEmail()))
+        {
+            msg = "保存用户'" + username + "'失败，邮箱已被占用";
+        }
         else
         {
             sysUser.setNickName(username);
+            sysUser.setEmail(registerBody.getEmail());
             sysUser.setPwdUpdateDate(DateUtils.getNowDate());
             sysUser.setPassword(SecurityUtils.encryptPassword(password));
             // 客户端注册仅允许 common 角色，避免越权注册医生/管理员
@@ -101,7 +106,7 @@ public class SysRegisterService
             boolean regFlag = userService.registerUser(sysUser);
             if (!regFlag)
             {
-                msg = "注册失败,请联系系统管理人员";
+                msg = "注册失败，请联系系统管理人员";
             }
             else
             {

@@ -172,9 +172,9 @@ public class SysUserServiceImpl implements ISysUserService
     @Override
     public boolean checkUserNameUnique(SysUser user)
     {
-        Long userId = StringUtils.isNull(user.getUserId()) ? -1L : user.getUserId();
+        long userId = StringUtils.isNull(user.getUserId()) ? -1L : user.getUserId();
         SysUser info = userMapper.checkUserNameUnique(user.getUserName());
-        if (StringUtils.isNotNull(info) && info.getUserId().longValue() != userId.longValue())
+        if (StringUtils.isNotNull(info) && info.getUserId() != userId)
         {
             return UserConstants.NOT_UNIQUE;
         }
@@ -190,9 +190,9 @@ public class SysUserServiceImpl implements ISysUserService
     @Override
     public boolean checkPhoneUnique(SysUser user)
     {
-        Long userId = StringUtils.isNull(user.getUserId()) ? -1L : user.getUserId();
+        long userId = StringUtils.isNull(user.getUserId()) ? -1L : user.getUserId();
         SysUser info = userMapper.checkPhoneUnique(user.getPhonenumber());
-        if (StringUtils.isNotNull(info) && info.getUserId().longValue() != userId.longValue())
+        if (StringUtils.isNotNull(info) && info.getUserId() != userId)
         {
             return UserConstants.NOT_UNIQUE;
         }
@@ -200,7 +200,7 @@ public class SysUserServiceImpl implements ISysUserService
     }
 
     /**
-     * 校验email是否唯一
+     * 校验 email 是否唯一
      *
      * @param user 用户信息
      * @return
@@ -208,9 +208,26 @@ public class SysUserServiceImpl implements ISysUserService
     @Override
     public boolean checkEmailUnique(SysUser user)
     {
-        Long userId = StringUtils.isNull(user.getUserId()) ? -1L : user.getUserId();
+        long userId = StringUtils.isNull(user.getUserId()) ? -1L : user.getUserId();
         SysUser info = userMapper.checkEmailUnique(user.getEmail());
-        if (StringUtils.isNotNull(info) && info.getUserId().longValue() != userId.longValue())
+        if (StringUtils.isNotNull(info) && info.getUserId() != userId)
+        {
+            return UserConstants.NOT_UNIQUE;
+        }
+        return UserConstants.UNIQUE;
+    }
+    
+    /**
+     * 通过邮箱校验用户是否唯一
+     *
+     * @param email 邮箱
+     * @return
+     */
+    @Override
+    public boolean checkEmailUniqueByEmail(String email)
+    {
+        SysUser info = userMapper.checkEmailUnique(email);
+        if (StringUtils.isNotNull(info))
         {
             return UserConstants.NOT_UNIQUE;
         }

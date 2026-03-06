@@ -82,15 +82,23 @@
       </div>
     </el-card>
 
-    <el-dialog v-model="open" :title="dialogTitle" width="860px" append-to-body>
+    <!--新增就诊人-->
+    <el-dialog v-model="open"
+               :title="dialogTitle"
+               width="860px"
+               :close-on-click-modal="false"
+               append-to-body
+               class="visitor-dialog"
+                style="width: 90vw;"
+    >
       <el-form ref="formRef" :model="form" :rules="rules" label-width="90px">
         <el-row :gutter="16">
-          <el-col :span="12">
+          <el-col :xs="24" :sm="12">
             <el-form-item label="姓名" prop="name">
               <el-input v-model="form.name" placeholder="请输入姓名" maxlength="50" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :xs="24" :sm="12">
             <el-form-item label="关系" prop="relation">
               <el-select v-model="form.relation" placeholder="请选择关系" style="width: 100%;">
                 <el-option label="本人" value="本人" />
@@ -101,17 +109,17 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :xs="24" :sm="12">
             <el-form-item label="身份证号" prop="idCard">
               <el-input v-model="form.idCard" placeholder="请输入身份证号" maxlength="18" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :xs="24" :sm="12">
             <el-form-item label="手机号" prop="phonenumber">
               <el-input v-model="form.phonenumber" placeholder="请输入手机号" maxlength="11" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :xs="24" :sm="12">
             <el-form-item label="性别" prop="gender">
               <el-radio-group v-model="form.gender">
                 <el-radio :value="0">男</el-radio>
@@ -119,27 +127,27 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :xs="24" :sm="12">
             <el-form-item label="出生日期" prop="birthDate">
               <el-date-picker v-model="form.birthDate" type="date" value-format="YYYY-MM-DD" placeholder="请选择出生日期" style="width: 100%;" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :xs="24" :sm="12">
             <el-form-item label="医保卡号" prop="medicalCardNo">
               <el-input v-model="form.medicalCardNo" placeholder="可选" maxlength="30" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :xs="24" :sm="12">
             <el-form-item label="默认就诊人" prop="isDefault">
               <el-switch v-model="form.isDefault" :active-value="1" :inactive-value="0" />
             </el-form-item>
           </el-col>
-          <el-col :span="24">
+          <el-col :xs="24">
             <el-form-item label="过敏史" prop="allergyHistory">
               <el-input v-model="form.allergyHistory" type="textarea" :rows="2" placeholder="可选" maxlength="500" show-word-limit />
             </el-form-item>
           </el-col>
-          <el-col :span="24">
+          <el-col :xs="24">
             <el-form-item label="既往史" prop="pastHistory">
               <el-input v-model="form.pastHistory" type="textarea" :rows="2" placeholder="可选" maxlength="500" show-word-limit />
             </el-form-item>
@@ -147,12 +155,14 @@
         </el-row>
       </el-form>
       <template #footer>
-        <el-button @click="open = false">取消</el-button>
-        <el-button type="primary" :loading="saving" @click="submitForm">保存</el-button>
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <el-button @click="open = false">取消</el-button>
+          <el-button type="primary" :loading="saving" @click="submitForm">保存</el-button>
+        </div>
       </template>
     </el-dialog>
 
-    <el-dialog v-model="editProfileDialogVisible" title="编辑资料" width="400px" :close-on-click-modal="false">
+    <el-dialog v-model="editProfileDialogVisible" title="编辑资料" width="400px" :close-on-click-modal="false" style="width: 90vw;">
       <el-form ref="editProfileFormRef" :model="editProfileForm" :rules="editProfileRules" label-width="90px"> 
         <el-form-item label="昵称" prop="nickName">
           <el-input v-model="editProfileForm.nickName" placeholder="请输入昵称" maxlength="50" />

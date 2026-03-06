@@ -1,7 +1,7 @@
 <template>
   <div class="register">
     <el-form ref="registerRef" :model="registerForm" :rules="registerRules" class="register-form">
-      <h3 class="title">{{ title }}</h3>
+      <h3 class="title">注册账号 - {{ title }}</h3>
       <el-form-item prop="username">
         <el-input 
           v-model="registerForm.username" 
@@ -11,6 +11,17 @@
           placeholder="账号"
         >
           <template #prefix><svg-icon icon-class="user" class="el-input__icon input-icon" /></template>
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="email">
+        <el-input
+            v-model="registerForm.email"
+            type="text"
+            size="large"
+            auto-complete="off"
+            placeholder="邮箱"
+        >
+          <template #prefix><svg-icon icon-class="email" class="el-input__icon input-icon" /></template>
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
@@ -87,6 +98,7 @@ const { proxy } = getCurrentInstance()
 
 const registerForm = ref({
   username: "",
+  email: "",
   password: "",
   confirmPassword: "",
   code: "",
@@ -105,6 +117,11 @@ const registerRules = {
   username: [
     { required: true, trigger: "blur", message: "请输入您的账号" },
     { min: 2, max: 20, message: "用户账号长度必须介于 2 和 20 之间", trigger: "blur" }
+  ],
+  email: [
+    { required: true, trigger: "blur", message: "请输入您的邮箱" },
+    { pattern: /^[\w_-]+@[\w_-]+\.[\w\.]+$/, message: "请输入正确的邮箱地址", trigger: ["blur", "change"] },
+    { type: "email", message: "请输入正确的邮箱地址", trigger: ["blur", "change"] }
   ],
   password: [
     { required: true, trigger: "blur", message: "请输入您的密码" },

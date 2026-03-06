@@ -84,12 +84,20 @@ public interface ISysUserService
     public boolean checkPhoneUnique(SysUser user);
 
     /**
-     * 校验email是否唯一
+     * 校验 email 是否唯一
      *
      * @param user 用户信息
      * @return 结果
      */
     public boolean checkEmailUnique(SysUser user);
+    
+    /**
+     * 通过邮箱校验用户是否唯一
+     *
+     * @param email 邮箱
+     * @return 结果
+     */
+    public boolean checkEmailUniqueByEmail(String email);
 
     /**
      * 校验用户是否允许操作
