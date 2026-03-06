@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.system;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.ArrayUtils;
@@ -17,12 +18,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
@@ -31,6 +34,7 @@ import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysPostService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.framework.mail.CaptchaEmailService;
 
 /**
  * 用户信息
@@ -52,6 +56,12 @@ public class SysUserController extends BaseController
 
     @Autowired
     private ISysPostService postService;
+    
+    @Autowired
+    private RedisCache redisCache;
+    
+    @Autowired
+    private CaptchaEmailService captchaEmailService;
 
     /**
      * 获取用户列表
@@ -252,5 +262,39 @@ public class SysUserController extends BaseController
     public AjaxResult deptTree(SysDept dept)
     {
         return success(deptService.selectDeptTreeList(dept));
+    }
+
+    /**
+     * 通过邮箱找回密码（使用邮件验证码验证）
+     */
+    @Log(title = "密码重置", businessType = BusinessType.UPDATE)
+    @PutMapping("/resetPwdByEmail")
+    public AjaxResult resetPwdByEmail(@RequestBody Map<String, String> params)
+    {
+        String email = params.get("email");
+        String code = params.get("code");
+        String uuid = params.get("uuid");
+        String newPassword = params.get("newPassword");
+        
+        // 校验邮件验证码
+        if (!captchaEmailService.validateCaptcha(uuid, code))
+        {
+            return error("验证码错误或已过期");
+        }
+        
+        // 根据邮箱查找用户
+        SysUser user = userService.selectUserByEmail(email);
+        if (StringUtils.isNull(user))
+        {
+            return error("该邮箱未注册");
+        }
+        
+        // 重置密码
+        user.setPassword(SecurityUtils.encryptPassword(newPassword));
+        if (userService.resetPwd(user) > 0)
+        {
+            return success("密码重置成功");
+        }
+        return error("密码重置失败");
     }
 }

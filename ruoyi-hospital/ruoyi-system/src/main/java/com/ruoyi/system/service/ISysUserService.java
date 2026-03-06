@@ -183,11 +183,19 @@ public interface ISysUserService
     /**
      * 重置用户密码
      * 
-     * @param userId 用户ID
+     * @param userId 用户 ID
      * @param password 密码
      * @return 结果
      */
     public int resetUserPwd(Long userId, String password);
+    
+    /**
+     * 通过邮箱查询用户
+     * 
+     * @param email 邮箱
+     * @return 用户信息
+     */
+    public SysUser selectUserByEmail(String email);
 
     /**
      * 通过用户ID删除用户

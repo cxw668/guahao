@@ -24,10 +24,48 @@
       </el-form-item>
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
         <el-checkbox v-model="loginForm.rememberMe">记住密码</el-checkbox>
-        <span class="register" style="font-size: 14px; font-weight: bold; color: skyblue; ">
-          <router-link class="link-type" :to="'/register'">立即注册</router-link>
-        </span>
+        <div style="display: flex; gap: 15px; font-size: 14px;">
+          <span class="forgot-password" style="font-weight: bold; color: skyblue; cursor: pointer;" @click="()=>resetDialogVisible=true">
+            忘记密码
+          </span>
+          <span class="register" style="font-weight: bold; color: skyblue;">
+            <router-link class="link-type" :to="'/register'">立即注册</router-link>
+          </span>
+        </div>
       </div>
+
+      <!-- 密码重置弹窗 -->
+      <el-dialog v-model="resetDialogVisible" title="密码重置" width="400px" :close-on-click-modal="false" @close="closeResetDialog">
+        <el-form ref="resetFormRef" :model="resetForm" :rules="resetRules" label-width="80px">
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="resetForm.email" placeholder="请输入注册邮箱" />
+          </el-form-item>
+          <el-form-item label="验证码" prop="code">
+            <div style="display: flex; gap: 10px;">
+              <el-input v-model="resetForm.code" placeholder="请输入验证码" style="flex: 1;" />
+              <el-button
+                :loading="sendingCode"
+                :disabled="sendingCode || !resetForm.email"
+                @click="sendResetCode"
+                style="white-space: nowrap;">
+                {{ sendingCode ? `${countdown}s` : '发送验证码' }}
+              </el-button>
+            </div>
+          </el-form-item>
+          <el-form-item label="新密码" prop="newPassword">
+            <el-input v-model="resetForm.newPassword" type="password" placeholder="请输入新密码" show-password />
+          </el-form-item>
+          <el-form-item label="确认密码" prop="confirmPassword">
+            <el-input v-model="resetForm.confirmPassword" type="password" placeholder="请再次输入新密码" show-password />
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <el-button @click="resetDialogVisible = false">取消</el-button>
+            <el-button type="primary" :loading="resetting" @click="handleResetPassword">重置密码</el-button>
+          </div>
+        </template>
+      </el-dialog>
       <el-form-item style="width:100%;">
         <el-button :loading="loading" size="large" type="primary" style="width:100%;" @click.prevent="handleLogin">
           <span v-if="!loading">登 录</span>
@@ -48,6 +86,7 @@ import Cookies from "js-cookie"
 import { encrypt, decrypt } from "@/utils/jsencrypt"
 import useUserStore from '@/store/modules/user'
 import defaultSettings from '@/settings'
+import request from '@/utils/request'
 
 const title = import.meta.env.VITE_APP_TITLE
 const footerContent = defaultSettings.footerContent
@@ -55,7 +94,7 @@ const userStore = useUserStore()
 const route = useRoute()
 const router = useRouter()
 const { proxy } = getCurrentInstance()
-
+const resetDialogVisible = ref(false)
 /**
  * admin => admin admin123
  * common => common common123
@@ -82,6 +121,44 @@ const captchaEnabled = ref(true)
 // 注册开关
 const register = ref(false)
 const redirect = ref(undefined)
+
+// 密码重置相关
+const resetForm = ref({
+  email: "",
+  code: "",
+  uuid: "",
+  newPassword: "",
+  confirmPassword: ""
+})
+
+const resetRules = {
+  email: [
+    { required: true, trigger: "blur", message: "请输入邮箱" },
+    { type: "email", trigger: "blur", message: "邮箱格式不正确" }
+  ],
+  code: [{ required: true, trigger: "change", message: "请输入验证码" }],
+  newPassword: [
+    { required: true, trigger: "blur", message: "请输入新密码" },
+    { min: 5, max: 20, trigger: "blur", message: "密码长度必须在 5 到 20 个字符之间" }
+  ],
+  confirmPassword: [
+    { required: true, trigger: "blur", message: "请再次输入新密码" },
+    {
+      validator: (rule, value) => {
+        if (value !== resetForm.value.newPassword) {
+          return new Error('两次输入的密码不一致')
+        }
+        return true
+      },
+      trigger: "blur"
+    }
+  ]
+}
+
+const sendingCode = ref(false)
+const countdown = ref(0)
+const resetting = ref(false)
+let countdownTimer = null
 
 watch(route, (newRoute) => {
   redirect.value = newRoute.query && newRoute.query.redirect
@@ -142,6 +219,116 @@ function getCookie() {
     password: password === undefined ? loginForm.value.password : decrypt(password),
     rememberMe: rememberMe === undefined ? false : Boolean(rememberMe)
   }
+}
+
+/**
+ * 发送重置密码验证码
+ */
+async function sendResetCode() {
+  // 验证邮箱格式
+  try {
+    await proxy.$refs.resetFormRef.validateField('email')
+  } catch (error) {
+    return
+  }
+
+  sendingCode.value = true
+  countdown.value = 60
+  
+  console.log('[密码重置] 请求发送验证码到邮箱:', resetForm.value.email)
+  
+  try {
+    // 调用后端发送邮件验证码 API
+    const res = await request({
+      url: '/captcha/sendResetCode',
+      method: 'post',
+      data: {
+        email: resetForm.value.email
+      }
+    })
+    
+    console.log('[密码重置] 验证码发送成功，UUID:', res.data.uuid)
+    resetForm.value.uuid = res.data.uuid
+    
+    proxy.$modal.msgSuccess('验证码已发送至邮箱，请注意查收')
+    
+    // 开始倒计时
+    countdownTimer = setInterval(() => {
+      countdown.value--
+      if (countdown.value <= 0) {
+        clearInterval(countdownTimer)
+        sendingCode.value = false
+      }
+    }, 1000)
+  } catch (error) {
+    console.error('[密码重置] 验证码发送失败:', error)
+    sendingCode.value = false
+    countdown.value = 0
+  }
+}
+
+/**
+ * 处理密码重置
+ */
+async function handleResetPassword() {
+  try {
+    await proxy.$refs.resetFormRef.validate()
+  } catch (error) {
+    return
+  }
+
+  resetting.value = true
+  
+  console.log('[密码重置] 提交重置请求:', {
+    email: resetForm.value.email,
+    code: resetForm.value.code,
+    uuid: resetForm.value.uuid,
+    newPassword: resetForm.value.newPassword
+  })
+  
+  try {
+    // 调用后端密码重置 API
+    const res = await request({
+      url: '/system/user/resetPwdByEmail',
+      method: 'put',
+      data: {
+        email: resetForm.value.email,
+        code: resetForm.value.code,
+        uuid: resetForm.value.uuid,
+        newPassword: resetForm.value.newPassword
+      }
+    })
+    
+    proxy.$modal.msgSuccess('密码重置成功')
+    resetDialogVisible.value = false
+    // 清空表单
+    resetForm.value = {
+      email: "",
+      code: "",
+      uuid: "",
+      newPassword: "",
+      confirmPassword: ""
+    }
+  } catch (error) {
+    console.error('[密码重置] 失败:', error)
+    // 重新获取验证码
+    getCode()
+  } finally {
+    resetting.value = false
+  }
+}
+
+/**
+ * 关闭弹窗时清理定时器
+ */
+function closeResetDialog() {
+  resetDialogVisible.value = false
+  if (countdownTimer) {
+    clearInterval(countdownTimer)
+    countdownTimer = null
+  }
+  sendingCode.value = false
+  countdown.value = 0
 }
 
 getCode()
