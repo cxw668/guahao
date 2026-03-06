@@ -183,7 +183,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   cancelMedicalAppointment,
   checkinMedicalAppointment,
-  getMedicalAppointment,
+  getMedicalAppointment, getTodayCancelCount,
   listMedicalAppointments,
   payMedicalAppointment
 } from '@/api/medical/appointment'
@@ -327,12 +327,29 @@ async function doPay() {
     paying.value = false
   }
 }
-
 async function cancelOrder(row) {
+  /**
+   * 取消预约处理函数
+   * @param {Object} row - 预约订单对象，包含 appointmentId 等信息
+   * @returns {Promise<void>}
+   */
   const appointmentId = row?.appointmentId
   if (!Number.isFinite(appointmentId)) return
-  let value = ''
   try {
+    // 获取今日取消次数
+    const cancelRes = await getTodayCancelCount(userStore.id)
+    const cancelCnt = cancelRes?.data || 0
+    console.log('=== 当前取消次数 ===', cancelCnt)
+    // 如果今日已取消 2 次，提示用户再取消一次将无法继续预约
+    if (cancelCnt === 2) {
+      await ElMessageBox.confirm('今日的取消次数已经达到两次，如果继续取消，今日将无法继续预约，是否继续？', '警告', {
+        confirmButtonText: '继续取消',
+        cancelButtonText: '放弃',
+        type: 'warning'
+      })
+    }
+
+    // 弹出输入框让用户填写取消原因
     const res = await ElMessageBox.prompt('请输入取消原因', '取消预约', {
       confirmButtonText: '确认取消',
       cancelButtonText: '返回',
@@ -340,13 +357,27 @@ async function cancelOrder(row) {
       inputPattern: /^.{2,200}$/,
       inputErrorMessage: '取消原因长度需在 2-200 之间'
     })
-    value = res?.value || ''
-  } catch {
-    return
+
+    const cancelReason = res.value || ''
+
+    // 调用取消接口
+    await cancelMedicalAppointment(appointmentId, { cancelReason })
+
+    ElMessage.success('已取消')
+
+    // 如果本次取消后达到 3 次，提示用户今日不能再预约
+    if (cancelCnt + 1 >= 3) {
+      await ElMessageBox.alert('今天您已经取消预约三次，今日不能再继续预约，请改日再预约！', '提示', {
+        confirmButtonText: '确定'
+      })
+    }
+    // 刷新列表
+    await getList()
+  } catch (err) {
+    if (err !== 'cancel') {
+      console.log('取消预约异常:', err)
+    }
   }
-  await cancelMedicalAppointment(appointmentId, { cancelReason: value })
-  ElMessage.success('已取消')
-  getList()
 }
 
 async function checkin(row) {

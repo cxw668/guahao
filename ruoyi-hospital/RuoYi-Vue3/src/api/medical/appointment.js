@@ -60,3 +60,15 @@ export function finishMedicalAppointment(appointmentId) {
     method: 'patch'
   })
 }
+
+/**
+ * 查询患者当天取消预约次数
+ * @param patientId 患者 ID
+ */
+export function getTodayCancelCount(patientId) {
+  return request({
+    url: '/medical/appointments/cancel-count',
+    method: 'get',
+    params: { patientId }
+  })
+}

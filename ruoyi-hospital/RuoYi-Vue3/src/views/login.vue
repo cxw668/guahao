@@ -62,8 +62,8 @@ const { proxy } = getCurrentInstance()
  * doctor => doctor doctor123
  */
 const loginForm = ref({
-  username: "admin",
-  password: "admin123",
+  username: "",
+  password: "",
   rememberMe: false,
   code: "",
   uuid: ""

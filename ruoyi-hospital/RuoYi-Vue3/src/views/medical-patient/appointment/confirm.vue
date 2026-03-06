@@ -18,6 +18,14 @@
         :closable="false"
       />
 
+      <el-alert
+        v-else-if="cancelCount >= 3"
+        title="您今天取消预约次数已达 3 次，无法继续预约"
+        type="error"
+        show-icon
+        :closable="false"
+      />
+
       <el-descriptions v-else :column="2" border>
         <el-descriptions-item label="医生">
           <span>{{ doctor?.doctorName || '—' }}</span>
@@ -97,7 +105,7 @@
 
 <script setup name="MedicalPatientAppointmentConfirm">
 import { ElMessage } from 'element-plus'
-import { addMedicalAppointment, listMedicalAppointments, payMedicalAppointment } from '@/api/medical/appointment'
+import { addMedicalAppointment, listMedicalAppointments, payMedicalAppointment, getTodayCancelCount } from '@/api/medical/appointment'
 import { getMedicalDoctor } from '@/api/medical/doctor'
 import { getMedicalSchedule } from '@/api/medical/schedule'
 import { listMedicalPatientVisitors } from '@/api/medical/patientVisitor'
@@ -114,6 +122,7 @@ const userStore = useUserStore()
 
 const loading = ref(false)
 const submitting = ref(false)
+const cancelCount = ref(0)
 
 const schedule = ref(null)
 const doctor = ref(null)
@@ -139,7 +148,7 @@ const timeSlotText = computed(() => {
 })
 
 const canSubmit = computed(() => {
-  return Boolean(scheduleId.value && schedule.value && doctor.value && form.value.visitorId && visitorList.value.length)
+  return Boolean(scheduleId.value && schedule.value && doctor.value && form.value.visitorId && visitorList.value.length && cancelCount.value < 3)
 })
 
 function visitorLabel(v) {
@@ -176,6 +185,18 @@ async function loadVisitors() {
     form.value.visitorId = undefined
     return
   }
+  
+  // 查询当天取消次数
+  try {
+    const cancelRes = await getTodayCancelCount(patientId)
+    cancelCount.value = Number(cancelRes.rows) || 0
+    if (cancelCount.value >= 3) {
+      ElMessage.error('您今天取消预约次数已达 3 次，无法继续预约')
+    }
+  } catch (e) {
+    console.error('获取取消次数失败:', e)
+  }
+  
   const res = await listMedicalPatientVisitors({ pageNum: 1, pageSize: 100, patientId, status: 0 })
   visitorList.value = Array.isArray(res?.rows) ? res.rows : []
   const defaultOne = visitorList.value.find(v => v?.isDefault === 1)

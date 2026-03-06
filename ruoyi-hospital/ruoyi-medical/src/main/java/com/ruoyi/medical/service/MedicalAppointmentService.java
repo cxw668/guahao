@@ -5,6 +5,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.uuid.Seq;
 import com.ruoyi.medical.domain.MedicalAppointment;
@@ -15,6 +17,11 @@ import com.ruoyi.medical.mapper.MedicalAppointmentMapper;
 public class MedicalAppointmentService
 {
     private final MedicalAppointmentMapper medicalAppointmentMapper;
+
+    /**
+     * 预约取消次数限制常量
+     */
+    private static final int MAX_CANCEL_TIMES_PER_DAY = 3;
 
     public List<MedicalAppointment> selectMedicalAppointmentList(MedicalAppointment query)
     {
@@ -28,6 +35,17 @@ public class MedicalAppointmentService
 
     public int insertMedicalAppointment(MedicalAppointment appointment)
     {
+        // 检查患者当天取消预约次数是否超过限制
+        Long patientId = appointment.getPatientId();
+        if (patientId != null)
+        {
+            int cancelledCount = medicalAppointmentMapper.countTodayCancelledAppointments(patientId);
+            if (cancelledCount >= MAX_CANCEL_TIMES_PER_DAY)
+            {
+                throw new ServiceException("您今天取消预约次数已达 3 次，无法继续预约", HttpStatus.WARN);
+            }
+        }
+        
         if (appointment.getAppointmentNo() == null || appointment.getAppointmentNo().isBlank())
         {
             appointment.setAppointmentNo("APT" + Seq.getId());
@@ -88,5 +106,15 @@ public class MedicalAppointmentService
     public List<MedicalAppointment> selectActiveMedicalAppointmentList(MedicalAppointment query)
     {
         return medicalAppointmentMapper.selectActiveMedicalAppointmentList(query);
+    }
+
+    /**
+     * 查询患者当天取消的预约次数
+     * @param patientId 患者 ID
+     * @return 取消次数
+     */
+    public int getTodayCancelledCount(Long patientId)
+    {
+        return medicalAppointmentMapper.countTodayCancelledAppointments(patientId);
     }
 }

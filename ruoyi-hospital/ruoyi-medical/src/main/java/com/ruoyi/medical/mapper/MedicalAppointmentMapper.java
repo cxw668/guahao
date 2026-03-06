@@ -123,6 +123,7 @@ public interface MedicalAppointmentMapper
             "update_time = sysdate()",
             "where appointment_id = #{appointmentId}"
     })
+    // 新增：取消预约三次限制当天不能预约！！
     int cancelMedicalAppointment(@Param("appointmentId") Long appointmentId, @Param("cancelReason") String cancelReason,
             @Param("updateBy") String updateBy);
 
@@ -224,4 +225,18 @@ public interface MedicalAppointmentMapper
             "</script>"
     })
     List<MedicalAppointment> selectActiveMedicalAppointmentList(MedicalAppointment query);
+
+    /**
+     * 查询患者当天取消的预约次数
+     * 统计状态为 4（已取消）且取消时间为当天的预约数量
+     * @param patientId 患者 ID
+     * @return 取消次数
+     */
+    @Select({
+            "select count(1) from medical_appointment",
+            "where patient_id = #{patientId}",
+            "and status = 4",
+            "and date(cancel_time) = CURDATE()"
+    })
+    int countTodayCancelledAppointments(@Param("patientId") Long patientId);
 }

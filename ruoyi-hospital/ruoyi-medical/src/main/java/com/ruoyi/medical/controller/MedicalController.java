@@ -381,4 +381,16 @@ public class MedicalController extends BaseController
     {
         return toAjax(medicalAppointmentService.finishMedicalAppointment(appointmentId));
     }
+
+    /**
+     * 查询患者当天取消预约次数
+     * @param patientId 患者 ID
+     * @return 取消次数
+     */
+    @GetMapping("/appointments/cancel-count")
+    public AjaxResult getCancelCount(Long patientId)
+    {
+        int count = medicalAppointmentService.getTodayCancelledCount(patientId);
+        return success(count);
+    }
 }
