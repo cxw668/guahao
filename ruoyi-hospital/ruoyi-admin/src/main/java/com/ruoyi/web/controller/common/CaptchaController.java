@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.common;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import jakarta.annotation.Resource;
 import javax.imageio.ImageIO;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.FastByteArrayOutputStream;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.google.code.kaptcha.Producer;
 import com.ruoyi.common.config.RuoYiConfig;
@@ -17,8 +20,10 @@ import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.sign.Base64;
 import com.ruoyi.common.utils.uuid.IdUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import com.ruoyi.system.service.ISysConfigService;
 
 /**
@@ -90,5 +95,38 @@ public class CaptchaController
         ajax.put("uuid", uuid);
         ajax.put("img", Base64.encode(os.toByteArray()));
         return ajax;
+    }
+
+    /**
+     * 校验图形验证码
+     * 
+     * @param params 请求参数 {captcha: "1234", uuid: "xxx"}
+     * @return 校验结果
+     */
+    @PostMapping("/verify")
+    public AjaxResult verify(@RequestBody Map<String, String> params) {
+        String captcha = params.get("captcha");
+        String uuid = params.get("uuid");
+        
+        if (StringUtils.isEmpty(captcha) || StringUtils.isEmpty(uuid)) {
+            return AjaxResult.error("验证码不能为空");
+        }
+
+        String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + uuid;
+        String code = redisCache.getCacheObject(verifyKey);
+        
+        if (code == null) {
+            return AjaxResult.error("验证码已过期");
+        }
+
+        // 删除验证码，防止重复使用
+        redisCache.deleteObject(verifyKey);
+
+        // 不区分大小写比对
+        if (captcha.equalsIgnoreCase(code)) {
+            return AjaxResult.success(true);
+        } else {
+            return AjaxResult.success(false);
+        }
     }
 }

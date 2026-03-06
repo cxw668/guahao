@@ -20,7 +20,11 @@
         <div class="user__info">
           <div class="user__name">{{ userStore.nickName || userStore.name || '用户' }}</div>
           <div class="user__meta">账号：{{ userStore.name || '—' }} · ID：{{ userStore.id || '—' }}</div>
+          <div class="user__email">邮箱：{{ userStore.email || '—' }}</div>
         </div>
+        <el-button type="primary" icon="Edit" @click="handleEditProfile" class="edit-btn">
+          编辑资料
+        </el-button>
       </div>
     </el-card>
 
@@ -50,8 +54,8 @@
               
               <div class="visitor-content">
                 <div class="info-item">
-                  <el-icon><Iphone /></el-icon>
-                  <span>{{ visitor.phone }}</span>
+                  <el-icon><Iphonenumber /></el-icon>
+                  <span>{{ visitor.phonenumber }}</span>
                 </div>
                 <div class="info-item">
                   <el-icon><Postcard /></el-icon>
@@ -103,8 +107,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="手机号" prop="phone">
-              <el-input v-model="form.phone" placeholder="请输入手机号" maxlength="11" />
+            <el-form-item label="手机号" prop="phonenumber">
+              <el-input v-model="form.phonenumber" placeholder="请输入手机号" maxlength="11" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -147,6 +151,47 @@
         <el-button type="primary" :loading="saving" @click="submitForm">保存</el-button>
       </template>
     </el-dialog>
+
+    <el-dialog v-model="editProfileDialogVisible" title="编辑资料" width="400px" :close-on-click-modal="false">
+      <el-form ref="editProfileFormRef" :model="editProfileForm" :rules="editProfileRules" label-width="90px"> 
+        <el-form-item label="昵称" prop="nickName">
+          <el-input v-model="editProfileForm.nickName" placeholder="请输入昵称" maxlength="50" />
+        </el-form-item>
+        <el-form-item label="手机号" prop="phonenumber">
+          <el-input v-model="editProfileForm.phonenumber" placeholder="请输入手机号" maxlength="11" />
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="editProfileForm.email" placeholder="请输入邮箱" maxlength="50" />
+        </el-form-item>
+        <el-form-item label="性别" prop="sex">
+          <el-select v-model="editProfileForm.sex" placeholder="请选择性别" style="width: 100%;">
+            <el-option label="男" value="1" />
+            <el-option label="女" value="0" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="头像" prop="avatar">
+          <el-upload
+            class="avatar-uploader"
+            :action="uploadUrl"
+            :show-file-list="false"
+            :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload"
+            :headers="{
+              Authorization: 'Bearer ' + getToken()
+            }"
+          >
+            <img v-if="editProfileForm.avatar" :src="editProfileForm.avatar" class="avatar" />
+            <el-icon v-else class="avatar-uploader-icon"><Upload /></el-icon>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <el-button @click="editProfileDialogVisible = false">取消</el-button>
+          <el-button type="primary" :loading="savingProfile" @click="submitProfileForm">保存</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -159,7 +204,8 @@ import {
   updateMedicalPatientVisitor
 } from '@/api/medical/patientVisitor'
 import useUserStore from '@/store/modules/user'
-import {Back} from "@element-plus/icons-vue";
+import {Back, Edit, Upload} from "@element-plus/icons-vue"
+import { getToken } from '@/utils/auth'
 
 /**
  * 患者端-个人中心：展示用户信息，并提供就诊人档案的增删改与默认设置。
@@ -169,7 +215,25 @@ const userStore = useUserStore()
 
 const loading = ref(false)
 const saving = ref(false)
+const savingProfile = ref(false)
 const visitorList = ref([])
+
+// 用户信息编辑相关
+const editProfileDialogVisible = ref(false)
+const editProfileFormRef = ref()
+const editProfileForm = ref({})
+const uploadUrl = import.meta.env.VITE_APP_BASE_API + '/system/user/profile/avatar'
+
+const editProfileRules = ref({
+  nickName: [{ required: true, message: '昵称不能为空', trigger: 'blur' }],
+  phonenumber: [
+    { required: true, message: '手机号不能为空', trigger: 'blur' },
+    { pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确', trigger: 'blur' }
+  ],
+  email: [
+    { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
+  ]
+})
 
 const open = ref(false)
 const dialogTitle = ref('新增就诊人')
@@ -188,7 +252,7 @@ function resetForm() {
     patientId: undefined,
     name: '',
     idCard: '',
-    phone: '',
+    phonenumber: '',
     relation: '本人',
     gender: 0,
     birthDate: undefined,
@@ -305,6 +369,81 @@ function handleLogout() {
     .catch(() => {})
 }
 
+/**
+ * 编辑用户个人资料
+ */
+function handleEditProfile() {
+  editProfileDialogVisible.value = true
+  editProfileForm.value = {
+    userId: userStore.id,
+    nickName: userStore.nickName || '',
+    phonenumber: userStore.phonenumber || '',
+    email: userStore.email || '',
+    sex: userStore.sex || '0',
+    avatar: userStore.avatar || ''
+  }
+}
+
+/**
+ * 头像上传成功回调
+ */
+function handleAvatarSuccess(response) {
+  console.log('[头像上传] 成功:', response)
+  if (response.code === 200) {
+    editProfileForm.value.avatar = response.imgUrl
+    ElMessage.success('头像上传成功')
+  } else {
+    ElMessage.error(response.msg || '头像上传失败')
+  }
+}
+
+/**
+ * 头像上传前验证
+ */
+function beforeAvatarUpload(file) {
+  const isImage = file.type.startsWith('image/')
+  const isLt2M = file.size / 1024 / 1024 < 2
+
+  if (!isImage) {
+    ElMessage.error('只能上传图片文件!')
+    return false
+  }
+  if (!isLt2M) {
+    ElMessage.error('图片大小不能超过 2MB!')
+    return false
+  }
+  return true
+}
+
+/**
+ * 提交用户资料编辑
+ */
+async function submitProfileForm() {
+  if (!editProfileFormRef.value) return
+  
+  try {
+    await editProfileFormRef.value.validate()
+  } catch (error) {
+    return
+  }
+
+  savingProfile.value = true
+  console.log('[个人中心] 提交用户资料更新:', editProfileForm.value)
+  
+  try {
+    // 调用 store 中的 updateProfile 方法更新用户信息
+    await userStore.updateProfile(editProfileForm.value)
+    
+    ElMessage.success('个人资料已更新')
+    editProfileDialogVisible.value = false
+  } catch (error) {
+    console.error('[个人中心] 更新资料失败:', error)
+    ElMessage.error(error.message || '更新失败，请稍后重试')
+  } finally {
+    savingProfile.value = false
+  }
+}
+
 onMounted(() => {
   getList()
 })
@@ -340,6 +479,14 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
+  position: relative;
+}
+
+.edit-btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .user__name {
@@ -349,6 +496,11 @@ onMounted(() => {
 
 .user__meta {
   margin-top: 6px;
+  font-size: 12px;
+  color: #909399;
+}
+
+.user__email {
   font-size: 12px;
   color: #909399;
 }
@@ -421,5 +573,35 @@ onMounted(() => {
 
 .ml8 {
   margin-left: 8px;
+}
+
+/* 头像上传样式 */
+.avatar-uploader .el-upload {
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: var(--el-color-primary);
+}
+
+.el-icon.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 100px;
+  height: 100px;
+  text-align: center;
+  line-height: 100px;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  display: block;
+  object-fit: cover;
 }
 </style>

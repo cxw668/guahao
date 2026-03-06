@@ -40,12 +40,27 @@
           <el-form-item label="邮箱" prop="email">
             <el-input v-model="resetForm.email" placeholder="请输入注册邮箱" />
           </el-form-item>
+          <el-form-item label="图形验证" prop="captcha">
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <el-input 
+                v-model="resetForm.captcha" 
+                placeholder="请输入图形验证码" 
+                style="flex: 1;"
+                @keyup.enter="verifyCaptcha" />
+              <div class="login-code" style="width: 100px; height: 40px;">
+                <img :src="resetCodeUrl" @click="getResetCode" class="login-code-img" />
+              </div>
+              <el-icon v-if="captchaVerified" color="#67c23a" size="24">
+                <CircleCheckFilled />
+              </el-icon>
+            </div>
+          </el-form-item>
           <el-form-item label="验证码" prop="code">
             <div style="display: flex; gap: 10px;">
-              <el-input v-model="resetForm.code" placeholder="请输入验证码" style="flex: 1;" />
+              <el-input v-model="resetForm.code" placeholder="请输入邮箱验证码" style="flex: 1;" />
               <el-button
                 :loading="sendingCode"
-                :disabled="sendingCode || !resetForm.email"
+                :disabled="sendingCode || !resetForm.email || !captchaVerified"
                 @click="sendResetCode"
                 style="white-space: nowrap;">
                 {{ sendingCode ? `${countdown}s` : '发送验证码' }}
@@ -87,6 +102,7 @@ import { encrypt, decrypt } from "@/utils/jsencrypt"
 import useUserStore from '@/store/modules/user'
 import defaultSettings from '@/settings'
 import request from '@/utils/request'
+import { CircleCheckFilled } from '@element-plus/icons-vue'
 
 const title = import.meta.env.VITE_APP_TITLE
 const footerContent = defaultSettings.footerContent
@@ -125,17 +141,23 @@ const redirect = ref(undefined)
 // 密码重置相关
 const resetForm = ref({
   email: "",
+  captcha: "",
+  captchaUuid: "",
   code: "",
   uuid: "",
   newPassword: "",
   confirmPassword: ""
 })
 
+const resetCodeUrl = ref("")
+const captchaVerified = ref(false)
+
 const resetRules = {
   email: [
     { required: true, trigger: "blur", message: "请输入邮箱" },
     { type: "email", trigger: "blur", message: "邮箱格式不正确" }
   ],
+  captcha: [{ required: true, trigger: "change", message: "请输入图形验证码" }],
   code: [{ required: true, trigger: "change", message: "请输入验证码" }],
   newPassword: [
     { required: true, trigger: "blur", message: "请输入新密码" },
@@ -222,6 +244,68 @@ function getCookie() {
 }
 
 /**
+ * 获取密码重置图形验证码
+ */
+function getResetCode() {
+  console.log('[密码重置] 请求获取图形验证码')
+  getCodeImg().then(res => {
+    const enabled = res.code === 200
+    if (enabled) {
+      resetCodeUrl.value = "data:image/gif;base64," + res.img
+      resetForm.value.captchaUuid = res.uuid
+      // 每次获取新验证码时清空已验证状态
+      captchaVerified.value = false
+      resetForm.value.captcha = ""
+      console.log('[密码重置] 图形验证码已刷新，UUID:', res.uuid)
+    }
+  })
+}
+
+/**
+ * 校验图形验证码
+ */
+async function verifyCaptcha() {
+  if (!resetForm.value.captcha || !resetForm.value.captchaUuid) {
+    proxy["$modal"].msgError('请先输入验证码')
+    return
+  }
+
+  console.log('[密码重置] 校验图形验证码:', {
+    captcha: resetForm.value.captcha,
+    uuid: resetForm.value.captchaUuid
+  })
+
+  try {
+    const res = await request({
+      url: '/verify',
+      method: 'post',
+      data: {
+        captcha: resetForm.value.captcha,
+        uuid: resetForm.value.captchaUuid
+      }
+    })
+
+    if (res && res.code === 200 && res.data === true) {
+      captchaVerified.value = true
+      proxy["$modal"].msgSuccess('图形验证码正确')
+      console.log('[密码重置] 图形验证码校验通过')
+    } else {
+      captchaVerified.value = false
+      proxy["$modal"].msgError('图形验证码错误，请重新输入')
+      console.error('[密码重置] 图形验证码校验失败')
+      // 重新获取验证码
+      getResetCode()
+    }
+  } catch (error) {
+    console.error('[密码重置] 图形验证码校验异常:', error)
+    proxy["$modal"].msgError('验证码校验失败')
+    captchaVerified.value = false
+    // 重新获取验证码
+    getResetCode()
+  }
+}
+
+/**
  * 发送重置密码验证码
  */
 async function sendResetCode() {
@@ -229,6 +313,12 @@ async function sendResetCode() {
   try {
     await proxy.$refs.resetFormRef.validateField('email')
   } catch (error) {
+    return
+  }
+
+  // 检查图形验证码是否已验证
+  if (!captchaVerified.value) {
+    proxy["$modal"].msgWarning('请先通过图形验证码校验')
     return
   }
 
@@ -242,15 +332,13 @@ async function sendResetCode() {
     const res = await request({
       url: '/captcha/sendResetCode',
       method: 'post',
-      data: {
-        email: resetForm.value.email
-      }
+      data: { email: resetForm.value.email }
     })
     
     console.log('[密码重置] 验证码发送成功，UUID:', res.data.uuid)
     resetForm.value.uuid = res.data.uuid
     
-    proxy.$modal.msgSuccess('验证码已发送至邮箱，请注意查收')
+    proxy["$modal"].msgSuccess('验证码已发送至邮箱，请注意查收')
     
     // 开始倒计时
     countdownTimer = setInterval(() => {
@@ -329,7 +417,22 @@ function closeResetDialog() {
   }
   sendingCode.value = false
   countdown.value = 0
+  // 清空表单和验证码状态
+  resetForm.value = {
+    email: "",
+    captcha: "",
+    captchaUuid: "",
+    code: "",
+    uuid: "",
+    newPassword: "",
+    confirmPassword: ""
+  }
+  captchaVerified.value = false
+  resetCodeUrl.value = ""
 }
+
+// 初始化时获取密码重置的图形验证码
+getResetCode()
 
 getCode()
 getCookie()

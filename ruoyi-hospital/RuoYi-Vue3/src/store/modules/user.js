@@ -4,6 +4,7 @@ import { login, logout, getInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { isHttp, isEmpty } from "@/utils/validate"
 import defAva from '@/assets/images/profile.jpg'
+import { updateUserProfile } from '@/api/system/user'
 
 const useUserStore = defineStore(
   'user',
@@ -12,8 +13,11 @@ const useUserStore = defineStore(
       token: getToken(),
       id: '',
       name: '',
+      email: '',
+      phonenumber: '',
       nickName: '',
       avatar: '',
+      sex: '',
       roles: [],
       permissions: []
     }),
@@ -51,7 +55,10 @@ const useUserStore = defineStore(
             }
             this.id = user.userId
             this.name = user.userName
+            this.email = user.email
+            this.phonenumber = user.phonenumber
             this.nickName = user.nickName
+            this.sex = user.sex
             this.avatar = avatar
             /* 初始密码提示 */
             if(res.isDefaultModifyPwd) {
@@ -81,6 +88,17 @@ const useUserStore = defineStore(
             removeToken()
             location.reload()
             resolve()
+          }).catch(error => {
+            reject(error)
+          })
+        })
+      },
+      // 更新用户个人信息
+      updateProfile(data) {
+        return new Promise((resolve, reject) => {
+          updateUserProfile(data).then(res => {
+            // 更新成功后重新获取用户信息
+            this.getInfo().then(resolve).catch(reject)
           }).catch(error => {
             reject(error)
           })
