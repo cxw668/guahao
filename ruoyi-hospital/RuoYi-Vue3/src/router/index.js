@@ -11,7 +11,6 @@ const PortalRedirectView = {
   setup() {
     const router = useRouter()
     const userStore = useUserStore()
-    const tagsViewStore = useTagsViewStore()
     const isRedirecting = ref(false)
 
     function resolvePortalPath(roles) {
@@ -69,7 +68,7 @@ const PortalRedirectView = {
   }
  */
 
-// 公共路由
+// 公共路由 (所有用户都可以访问)
 export const constantRoutes = [
   {
     path: '/redirect',
@@ -107,21 +106,6 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/medical',
-    roles: ['admin'],
-    component: Layout,
-    hidden: true,
-    redirect: '/medical/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/medical/index.vue'),
-        name: 'MedicalIndex',
-        meta: { title: '管理端-首页' }
-      }
-    ]
-  },
-  {
     path: '/user',
     component: Layout,
     hidden: true,
@@ -134,72 +118,116 @@ export const constantRoutes = [
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
-  },
+  }
+]
+
+// 动态路由，基于用户角色权限动态加载
+export const dynamicRoutes = [
+  // 管理端路由 (仅 admin 角色可访问)
   {
-    path: '/test',
+    path: '/medical',
+    roles: ['admin'],
     component: Layout,
-    name: 'Test',
-    children: [{
-      path: 'job',
-      component: () => import('@/views/monitor/job/index.vue'),
-      name: 'TestJob',
-      meta: { title: '自动化服务' }
-    }],
-    meta: { title: '', icon: 'system' }
+    hidden: false,
+    redirect: '/medical/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/medical/index.vue'),
+        name: 'MedicalIndex',
+        meta: { title: '管理端 - 首页' }
+      },
+      {
+        path: 'dashboard',
+        component: () => import('@/views/medical/dashboard/index.vue'),
+        name: 'MedicalDashboard',
+        meta: { title: '数据大屏' }
+      },
+      {
+        path: 'department',
+        component: () => import('@/views/medical/department/index.vue'),
+        name: 'MedicalDepartment',
+        meta: { title: '科室管理' }
+      },
+      {
+        path: 'doctor',
+        component: () => import('@/views/medical/doctor/index.vue'),
+        name: 'MedicalDoctor',
+        meta: { title: '医生管理' }
+      },
+      {
+        path: 'schedule',
+        component: () => import('@/views/medical/schedule/index.vue'),
+        name: 'MedicalSchedule',
+        meta: { title: '号源管理' }
+      },
+      {
+        path: 'appointment',
+        component: () => import('@/views/medical/appointment/index.vue'),
+        name: 'MedicalAppointment',
+        meta: { title: '预约管理' }
+      },
+      {
+        path: 'job',
+        component: () => import('@/views/monitor/job/index.vue'),
+        name: 'MonitorJob',
+        meta: { title: '定时任务' }
+      }
+    ]
   },
-  // 医生端路由
+  // 医生端路由 (仅 doctor 角色可访问)
   {
     path: '/medical-doctor',
     roles: ['doctor'],
     component: Layout,
-    hidden: true,
-    redirect: '/medical-doctor/consult',
+    hidden: false,
+    redirect: '/medical-doctor/workbench',
     children: [
       {
-        path: 'consult',
-        component: () => import('@/views/medical-doctor/consult/index.vue'),
-        name: 'MedicalDoctorConsult',
-        meta: { title: '医生端-咨询' }
+        path: 'workbench',
+        component: () => import('@/views/medical-doctor/workbench/index.vue'),
+        name: 'MedicalDoctorWorkbench',
+        meta: { title: '医生端 - 工作台' }
       },
       {
         path: 'queue',
         component: () => import('@/views/medical-doctor/queue/index.vue'),
         name: 'MedicalDoctorQueue',
-        meta: { title: '医生端-队列' }
+        meta: { title: '医生端 - 候诊队列' }
+      },
+      {
+        path: 'consult',
+        component: () => import('@/views/medical-doctor/consult/index.vue'),
+        name: 'MedicalDoctorConsult',
+        meta: { title: '医生端 - 接诊/病历' }
       },
       {
         path: 'schedule',
         component: () => import('@/views/medical-doctor/schedule/index.vue'),
         name: 'MedicalDoctorSchedule',
-        meta: { title: '医生端-排班' }
-      },
-      {
-        path: 'workbench',
-        component: () => import('@/views/medical-doctor/workbench/index.vue'),
-        name: 'MedicalDoctorWorkbench',
-        meta: { title: '医生端-工作台' }
+        meta: { title: '医生端 - 我的排班' }
       }
     ]
   },
-  // 患者端 路由
+  // 患者端路由 (仅 common 角色可访问)
   {
     path: '/medical-patient',
     roles: ['common'],
     component: () => import('@/layout/PatientLayout.vue'),
-    hidden: true,
+    hidden: false,
     redirect: '/medical-patient/home',
     children: [
       {
         path: 'home',
         component: () => import('@/views/medical-patient/home/index.vue'),
         name: 'MedicalPatientHome',
-        meta: { title: '患者端-首页' }
+        meta: { title: '患者端 - 首页' }
       },
       {
         path: 'department',
         component: () => import('@/views/medical-patient/department/index.vue'),
         name: 'MedicalPatientDepartment',
-        meta: { title: '患者端-科室' }
+        meta: { title: '患者端 - 科室' }
       },
       {
         path: 'doctor',
@@ -210,13 +238,13 @@ export const constantRoutes = [
             path: 'list',
             component: () => import('@/views/medical-patient/doctor/list.vue'),
             name: 'MedicalPatientDoctorList',
-            meta: { title: '患者端-医生' }
+            meta: { title: '患者端 - 医生列表' }
           },
           {
             path: 'detail/:doctorId(\\d+)',
             component: () => import('@/views/medical-patient/doctor/detail.vue'),
             name: 'MedicalPatientDoctorDetail',
-            meta: { title: '患者端-医生详情' }
+            meta: { title: '患者端 - 医生详情' }
           }
         ]
       },
@@ -224,7 +252,7 @@ export const constantRoutes = [
         path: 'schedule',
         component: () => import('@/views/medical-patient/schedule/index.vue'),
         name: 'MedicalPatientSchedule',
-        meta: { title: '患者端-排班' }
+        meta: { title: '患者端 - 排班' }
       },
       {
         path: 'appointment',
@@ -235,13 +263,13 @@ export const constantRoutes = [
             path: 'confirm',
             component: () => import('@/views/medical-patient/appointment/confirm.vue'),
             name: 'MedicalPatientAppointmentConfirm',
-            meta: { title: '患者端-确认预约' }
+            meta: { title: '患者端 - 确认预约' }
           },
           {
             path: 'success',
             component: () => import('@/views/medical-patient/appointment/success.vue'),
             name: 'MedicalPatientAppointmentSuccess',
-            meta: { title: '患者端-预约成功' }
+            meta: { title: '患者端 - 预约成功' }
           }
         ]
       },
@@ -253,7 +281,7 @@ export const constantRoutes = [
             path: 'list',
             component: () => import('@/views/medical-patient/order/list.vue'),
             name: 'MedicalPatientOrderList',
-            meta: { title: '患者端-我的预约' }
+            meta: { title: '患者端 - 我的预约' }
           }
         ]
       },
@@ -261,14 +289,11 @@ export const constantRoutes = [
         path: 'profile',
         component: () => import('@/views/medical-patient/profile/index.vue'),
         name: 'MedicalPatientProfile',
-        meta: { title: '患者端-个人中心' }
+        meta: { title: '患者端 - 个人中心' }
       }
     ]
-  }
-]
-
-// 动态路由，基于用户权限动态去加载
-export const dynamicRoutes = [
+  },
+  // 系统功能路由 (基于菜单权限)
   {
     path: '/system/user-auth',
     component: Layout,
@@ -341,9 +366,23 @@ export const dynamicRoutes = [
   }
 ]
 
+export const notFoundRoute = {
+  path: '/:pathMatch(.*)*',
+  component: Layout,
+  hidden: true,
+  children: [
+    {
+      path: '',
+      component: () => import('@/views/error/404.vue'),
+      name: 'NotFound',
+      meta: { title: '404', icon: 'error' }
+    }
+  ]
+}
+
 const router = createRouter({
   history: createWebHistory(),
-  routes: constantRoutes,
+  routes: constantRoutes.concat([notFoundRoute]),
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
       return savedPosition

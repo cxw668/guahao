@@ -138,7 +138,7 @@ function resolvePortalBase(route) {
 
 
 function filterChildren(childrenMap, lastRouter = false) {
-  var children = []
+  let children = []
   childrenMap.forEach(el => {
     el.path = lastRouter ? lastRouter.path + '/' + el.path : el.path
     if (el.children && el.children.length && el.component === 'ParentView') {
