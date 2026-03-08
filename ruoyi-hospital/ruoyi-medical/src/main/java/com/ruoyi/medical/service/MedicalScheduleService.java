@@ -118,7 +118,7 @@ public class MedicalScheduleService
             schedule.setStartTime(startTime);
             schedule.setEndTime(endTime);
             // 默认号源数量，可根据医生级别配置，这里暂定统一值
-            schedule.setTotalSlots(30); 
+            schedule.setTotalSlots(8);
             schedule.setBookedSlots(0);
             schedule.setSlotMinutes(30);
             schedule.setStatus(0); // 正常
