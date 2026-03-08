@@ -380,9 +380,15 @@ export const notFoundRoute = {
   ]
 }
 
+// 所有路由 (包含动态路由，用于支持 URL直接访问)
+const allRoutes = constantRoutes.concat([
+  ...dynamicRoutes,
+  notFoundRoute
+])
+
 const router = createRouter({
   history: createWebHistory(),
-  routes: constantRoutes.concat([notFoundRoute]),
+  routes: allRoutes,
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
       return savedPosition

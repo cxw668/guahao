@@ -71,7 +71,7 @@ public class MedicalScheduleService
         MedicalDoctor queryDoctor = new MedicalDoctor();
         queryDoctor.setStatus(0); // 状态正常
         queryDoctor.setWorkStatus(0); // 在职
-        List<MedicalDoctor> doctors = MedicalDoctorMapper.class.cast(SpringUtils.getBean(MedicalDoctorMapper.class)).selectMedicalDoctorList(queryDoctor);
+        List<MedicalDoctor> doctors = SpringUtils.getBean(MedicalDoctorMapper.class).selectMedicalDoctorList(queryDoctor);
 
         // 2. 计算下周一的日期
         LocalDate today = LocalDate.now();
